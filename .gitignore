@@ -4,3 +4,5 @@
 *.sql
 error_log
 error.log
+assets/uploads/
+uploads/
