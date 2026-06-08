@@ -9,9 +9,9 @@
     
     <title><?= \Syncro\Security\SecurityManager::sanitizeOutput($pageTitle ?? 'Syncro') ?></title>
     
-    <script src="<?= BASE_PATH ?>/assets/js/tailwindcss.js?v=1.0"></script>
+    <script src="/assets/js/tailwindcss.js?v=1.0"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/app.css?v=1.0">
+    <link rel="stylesheet" href="/assets/css/app.css?v=1.0">
     <script>
         tailwind.config = {
             theme: {
