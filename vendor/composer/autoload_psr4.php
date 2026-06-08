@@ -7,7 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Syncro\\' => array($baseDir . '/core'),
-    'Stripe\\' => array($vendorDir . '/stripe/stripe-php/lib'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),

@@ -149,7 +149,7 @@
                 <?php else: ?>
                     <a href="/payment/checkout?booking_id=<?= $booking['id'] ?>&token=<?= htmlspecialchars($_GET['token'] ?? '') ?>" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded shadow-lg transition-colors flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        Pay Securely with Stripe
+                        Pay Securely with PhonePe
                     </a>
                 <?php endif; ?>
             </div>

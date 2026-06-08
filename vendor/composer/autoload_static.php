@@ -9,14 +9,12 @@ class ComposerStaticInit8dd1ae3bf6f96d123b6789b78f808a1c
     public static $files = array (
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
-        'd92f49fe138fde4e7a3ec6f988960524' => __DIR__ . '/..' . '/stripe/stripe-php/lib/version_check.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
             'Syncro\\' => 7,
-            'Stripe\\' => 7,
         ),
         'P' => 
         array (
@@ -33,10 +31,6 @@ class ComposerStaticInit8dd1ae3bf6f96d123b6789b78f808a1c
         'Syncro\\' => 
         array (
             0 => __DIR__ . '/../..' . '/core',
-        ),
-        'Stripe\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
         'PhpParser\\' => 
         array (

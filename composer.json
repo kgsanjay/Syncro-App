@@ -7,9 +7,6 @@
             "Syncro\\": "core/"
         }
     },
-    "require": {
-        "stripe/stripe-php": "^20.2"
-    },
     "require-dev": {
         "phpunit/phpunit": "^9.6"
     }

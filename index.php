@@ -90,10 +90,7 @@ try {
             (new PaymentController())->checkout();
             break;
             
-        case '/webhook/stripe':
-            if ($method === 'POST') (new PaymentController())->webhook();
-            else http_response_code(405);
-            break;
+        // Removed Stripe Webhook
 
         case '/guest/portal/update':
             if ($method === 'POST') (new GuestPortalController())->updateCheckin($_POST, $_FILES);
