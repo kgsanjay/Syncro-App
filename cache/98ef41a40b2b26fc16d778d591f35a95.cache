@@ -1,0 +1,20 @@
+<?php return array (
+  'expiry' => 1773237324,
+  'content' => 
+  array (
+    'reconciliation' => 
+    array (
+    ),
+    'performance' => 
+    array (
+      'total_revenue' => 4290.0,
+      'occupied_nights' => 3,
+      'available_nights' => 155,
+      'occupancy_rate' => 1.9399999999999999,
+      'adr' => 1430.0,
+      'revpar' => 27.68,
+    ),
+    'shiftTotal' => 0.0,
+    'cachedAt' => '7:10 PM',
+  ),
+);
