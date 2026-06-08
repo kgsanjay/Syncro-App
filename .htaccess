@@ -46,3 +46,8 @@
     Header always unset X-Powered-By
     ServerSignature Off
 </IfModule>
+
+# Disable PageSpeed as it breaks TailwindCSS Standalone Script
+<IfModule pagespeed_module>
+    ModPagespeed off
+</IfModule>
