@@ -43,7 +43,11 @@ class ExceptionHandler
         if (!headers_sent()) {
             http_response_code(500);
         }
-        include __DIR__ . '/../Views/public/500.php';
+        echo "<pre>";
+        echo "Exception: " . $exception->getMessage() . "\n";
+        echo "File: " . $exception->getFile() . ":" . $exception->getLine() . "\n";
+        echo "Trace: \n" . $exception->getTraceAsString();
+        echo "</pre>";
         exit;
     }
 
