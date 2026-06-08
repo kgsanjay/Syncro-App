@@ -32,7 +32,7 @@ if (file_exists($envPath)) {
 // 2. Strict Error Reporting (Zero Exposure Policy)
 // In production, E_ALL is logged, but NEVER displayed to the browser (prevents path disclosure)
 error_reporting(E_ALL);
-ini_set('display_errors', '0');
+ini_set('display_errors', '1');
 ini_set('log_errors', '1');
 
 // ==============================================================================
