@@ -3,3 +3,4 @@
 *.zip
 *.sql
 error_log
+error.log

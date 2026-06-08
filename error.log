@@ -1,4 +1,0 @@
-[08-Jun-2026 13:30:33 Asia/Kolkata] PHP Fatal error:  Uncaught Error: Class "Database" not found in /Applications/XAMPP/xamppfiles/htdocs/syncro/test_db.php:4
-Stack trace:
-#0 {main}
-  thrown in /Applications/XAMPP/xamppfiles/htdocs/syncro/test_db.php on line 4
