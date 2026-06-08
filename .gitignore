@@ -7,3 +7,4 @@ error.log
 assets/uploads/
 uploads/
 cache/*.cache
+.DS_Store
