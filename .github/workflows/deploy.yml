@@ -19,6 +19,7 @@ jobs:
         server: ftp.stackcp.adhyancreatives.in
         username: syncro@syncro.adhyancreatives.in
         password: xuegmut3y
+        protocol: ftps
         exclude: |
           **/.git*
           **/.git*/**
