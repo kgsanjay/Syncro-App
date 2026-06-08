@@ -31,7 +31,7 @@ $isAccountExpired = !empty($_SESSION['account_expired']);
     
     <title><?= SecurityManager::sanitizeOutput($pageTitle ?? 'Property Dashboard | Syncro') ?></title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/js/tailwindcss.js?v=1.0"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/app.css?v=1.0">
     <script>
