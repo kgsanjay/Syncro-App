@@ -11,21 +11,11 @@ use Exception;
 class Database
 {
     private static ?PDO $instance = null;
+    private ?PDO $pdo = null;
 
-    private function __construct()
+    public function __construct(?PDO $pdo = null)
     {
-        // Private constructor to enforce Singleton
-    }
-
-    private function __clone()
-    {
-        // Prevent cloning
-    }
-
-    public function __wakeup()
-    {
-        // Prevent unserializing to strictly enforce Singleton
-        throw new Exception("Cannot unserialize a singleton.");
+        $this->pdo = $pdo ?? self::getConnection();
     }
 
     public static function getConnection(): PDO
@@ -46,7 +36,18 @@ class Database
                 throw new RuntimeException("System configuration error. Service unavailable.");
             }
 
-            $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
+            $socket = $_ENV['DB_SOCKET'] ?? getenv('DB_SOCKET');
+            
+            if (!empty($socket)) {
+                $dsn = "mysql:unix_socket=$socket;dbname=$db;charset=$charset";
+            } else {
+                $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
+            }
+            
+            $connectionType = $_ENV['DB_CONNECTION'] ?? getenv('DB_CONNECTION');
+            if ($connectionType === 'sqlite') {
+                $dsn = "sqlite:" . ($host === 'memory' ? ':memory:' : $db);
+            }
 
             $options = [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -56,13 +57,13 @@ class Database
             ];
 
             try {
-                self::$instance = new PDO($dsn, $user, $pass, $options);
+                self::$instance = new PDO($dsn, $connectionType === 'sqlite' ? null : $user, $connectionType === 'sqlite' ? null : $pass, $options);
             } catch (PDOException $e) {
                 // Log the sensitive PDO error internally.
                 error_log("CRITICAL: Database Connection Failure: " . $e->getMessage());
                 
                 // Throw a generic, safe exception to halt execution without leaking data.
-                throw new RuntimeException("A critical infrastructure error occurred. Service is temporarily unavailable.");
+                throw new RuntimeException("A critical infrastructure error occurred: " . $e->getMessage());
             }
         }
 
@@ -77,5 +78,15 @@ class Database
     public static function table(string $tableName): QueryBuilder
     {
         return (new QueryBuilder(self::getConnection()))->table($tableName);
+    }
+
+    public function getPDO(): PDO
+    {
+        return $this->pdo ?? self::getConnection();
+    }
+
+    public function getTable(string $tableName): QueryBuilder
+    {
+        return clone (new QueryBuilder($this->getPDO()))->table($tableName);
     }
 }

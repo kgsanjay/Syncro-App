@@ -4,20 +4,21 @@ declare(strict_types=1);
 namespace Syncro\Middleware;
 
 use Syncro\Models\Database;
+use Syncro\Security\UnauthorizedException;
 
-class ApiAuthMiddleware
+class ApiAuthMiddleware implements MiddlewareInterface
 {
     /**
      * Authenticate API request using Bearer token.
-     * Returns the Hotel ID if authenticated, otherwise sends 401 response and exits.
+     * Throws UnauthorizedException if authentication fails.
      */
-    public static function authenticate(): int
+    public function handle(): void
     {
         $headers = getallheaders();
         $authHeader = $headers['Authorization'] ?? '';
 
         if (!$authHeader || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-            self::unauthorized('Missing or invalid Authorization header');
+            throw new UnauthorizedException('Missing or invalid Authorization header');
         }
 
         $token = $matches[1];
@@ -29,16 +30,11 @@ class ApiAuthMiddleware
         $hotelId = $stmt->fetchColumn();
 
         if (!$hotelId) {
-            self::unauthorized('Invalid API token');
+            throw new UnauthorizedException('Invalid API token');
         }
-
-        return (int)$hotelId;
-    }
-
-    private static function unauthorized(string $message): void
-    {
-        header('Content-Type: application/json', true, 401);
-        echo json_encode(['error' => 'Unauthorized', 'message' => $message]);
-        exit;
+        
+        // Optionally, we could store the authenticated hotelId somewhere for the controller to use,
+        // e.g. $_SERVER['HTTP_X_AUTH_HOTEL_ID'] = $hotelId;
+        // but for now, we just pass the pipeline.
     }
 }

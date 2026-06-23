@@ -8,9 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --theme2: #003366;
-            --light: #f8f9fa;
-            --text: #555555;
+            --theme2: var(--header);
+            --light: var(--light);
+            --text: var(--text);
         }
     </style>
 </head>

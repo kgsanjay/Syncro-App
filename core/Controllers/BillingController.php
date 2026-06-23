@@ -10,11 +10,14 @@ use Syncro\Services\CacheManager; // IMPORT CACHE
 
 class BillingController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
     private BillingService $billingService;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
-        parent::__construct();
+        $this->db = $db;
+        parent::__construct($db);
         $this->billingService = new BillingService();
     }
 
@@ -47,12 +50,6 @@ class BillingController extends BaseHotelController
         $this->requireRole(['hotel_admin', 'receptionist']);
         
         $bookingId = (int)($postData['booking_id'] ?? 0);
-        
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            SessionManager::setFlash('error', 'Security Violation: CSRF Token Mismatch.');
-            $this->redirect('/user/invoice?id=' . $bookingId);
-            return;
-        }
 
         $description = strip_tags(trim($postData['description'] ?? ''));
         $amount = (float)($postData['amount'] ?? 0);
@@ -85,12 +82,6 @@ class BillingController extends BaseHotelController
         $this->requireRole(['hotel_admin', 'receptionist']);
         
         $bookingId = (int)($postData['booking_id'] ?? 0);
-
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            SessionManager::setFlash('error', 'Security Violation: CSRF Token Mismatch.');
-            $this->redirect('/user/invoice?id=' . $bookingId);
-            return;
-        }
 
         $amount = (float)($postData['amount'] ?? 0);
 

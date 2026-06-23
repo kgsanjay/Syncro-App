@@ -52,7 +52,7 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
                     <p class="text-[10px] font-bold text-[var(--header)] uppercase tracking-widest mb-2">Direct Booking Engine URL</p>
                     <div class="flex items-center">
                         <input type="text" readonly value="<?= 'https://' . $_SERVER['HTTP_HOST'] . '/book/' . \Syncro\Security\SecurityManager::sanitizeOutput($hotel['slug'] ?? '') ?>" class="w-full px-4 py-3 border border-[var(--border)] rounded-l bg-[var(--light)] text-sm font-mono text-[var(--text)] outline-none">
-                        <a href="/book/<?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['slug'] ?? '') ?>" target="_blank" class="bg-[var(--header)] hover:bg-[var(--theme2)] text-[var(--white)] px-6 py-3 rounded-r text-sm font-bold uppercase tracking-widest transition-colors flex items-center">
+                        <a href="<?= base_url() ?>/book/<?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['slug'] ?? '') ?>" target="_blank" class="bg-[var(--header)] hover:bg-[var(--theme2)] text-[var(--white)] px-6 py-3 rounded-r text-sm font-bold uppercase tracking-widest transition-colors flex items-center">
                             Visit
                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         </a>
@@ -63,7 +63,7 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
                 <div class="bg-[var(--light)] p-6 rounded border border-[var(--border)]">
                     <h4 class="font-bold text-[var(--header)] mb-4 text-sm uppercase tracking-widest">Renew / Upgrade License</h4>
                     <form action="<?= $gatewayEnabled ? '/user/settings/renew/init' : '/user/settings/renew/offline' ?>" method="POST" class="flex flex-col sm:flex-row gap-4 items-end">
-                        <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                        <?= csrf_field() ?>">
                         
                         <div class="flex-1 w-full">
                             <label class="block text-[10px] font-bold text-[var(--text)] uppercase tracking-widest mb-2">Select Extension Period</label>
@@ -94,8 +94,8 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
                 </h3>
             </div>
             
-            <form action="/user/settings/profile" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/user/settings/profile') ?>" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">
+                <?= csrf_field() ?>">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -140,8 +140,8 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
                 </h3>
             </div>
             
-            <form action="/user/settings/payment" method="POST" class="p-6 md:p-8 space-y-6">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/user/settings/payment') ?>" method="POST" class="p-6 md:p-8 space-y-6">
+                <?= csrf_field() ?>">
                 
                 <p class="text-sm text-[var(--text)] font-medium mb-6">Enter your PhonePe Merchant API Keys to receive guest payments directly to your bank account with zero commissions. Leave blank to process payments manually at the front desk.</p>
                 
@@ -181,15 +181,15 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
                 </h3>
             </div>
             
-            <form action="/user/settings/ota" method="POST" class="p-6 md:p-8 space-y-8">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/user/settings/ota') ?>" method="POST" class="p-6 md:p-8 space-y-8">
+                <?= csrf_field() ?>">
                 
                 <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-8">
                     <h4 class="text-sm font-bold text-indigo-900 uppercase tracking-widest mb-2">Syncro API Access Token</h4>
                     <p class="text-xs text-indigo-700 mb-3">Provide this token to external channel managers to allow them to push bookings to Syncro.</p>
                     <div class="flex">
                         <input type="text" readonly value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['api_token'] ?? 'No token generated yet') ?>" class="w-full px-4 py-2 border border-indigo-200 rounded-l bg-white text-sm font-mono text-indigo-900 select-all">
-                        <a href="/user/settings/generate-token" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-r text-xs uppercase tracking-widest flex items-center transition-colors">
+                        <a href="<?= base_url('/user/settings/generate-token') ?>" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-r text-xs uppercase tracking-widest flex items-center transition-colors">
                             Generate New
                         </a>
                     </div>
@@ -313,8 +313,8 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
                 </h3>
             </div>
             
-            <form action="/user/settings" method="POST" class="p-6 md:p-8 space-y-6">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/user/settings') ?>" method="POST" class="p-6 md:p-8 space-y-6">
+                <?= csrf_field() ?>">
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
@@ -368,14 +368,14 @@ $gatewayEnabled = ($settings['payment_gateway_enabled'] ?? '0') === '1';
 
                 <div class="w-full md:w-auto">
                     <?php if ($is2faEnabled): ?>
-                        <form action="/user/settings/2fa/disable" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to disable 2FA? This will make your account vulnerable.');">
-                            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                        <form action="<?= base_url('/user/settings/2fa/disable') ?>" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to disable 2FA? This will make your account vulnerable.');">
+                            <?= csrf_field() ?>">
                             <button type="submit" class="w-full md:w-auto bg-[var(--danger)]/5 text-[var(--danger)] border-2 border-[var(--danger)]/30 px-8 py-4 rounded-xl font-black hover:bg-[var(--danger)] hover:text-[var(--white)] transition-all text-[10px] uppercase tracking-[0.2em] shadow-lg">
                                 Disable Security Layer
                             </button>
                         </form>
                     <?php else: ?>
-                        <a href="/user/settings/2fa/setup" class="block text-center w-full md:w-auto bg-[var(--theme2)] text-[var(--white)] px-8 py-4 rounded-xl font-black hover:bg-[var(--header)] transition-all text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:-translate-y-1 active:scale-95">
+                        <a href="<?= base_url('/user/settings/2fa/setup') ?>" class="block text-center w-full md:w-auto bg-[var(--theme2)] text-[var(--white)] px-8 py-4 rounded-xl font-black hover:bg-[var(--header)] transition-all text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:-translate-y-1 active:scale-95">
                             Enable Two-Factor (2FA)
                         </a>
                     <?php endif; ?>

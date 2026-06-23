@@ -37,8 +37,8 @@
                     </h3>
                 </div>
                 
-                <form action="/user/rates" method="POST" class="p-6 space-y-5">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/rates') ?>" method="POST" class="p-6 space-y-5">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-xs font-bold text-[var(--header)] uppercase tracking-wider mb-2">Room Category</label>
@@ -88,8 +88,8 @@
                         Pricing Rules
                     </h3>
                 </div>
-                <form action="/user/rates/rule/create" method="POST" class="p-6 space-y-4 border-b border-[var(--border)]">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/rates/rule/create') ?>" method="POST" class="p-6 space-y-4 border-b border-[var(--border)]">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-xs font-bold text-[var(--header)] uppercase tracking-wider mb-2">Room Type</label>
@@ -150,8 +150,8 @@
                                         Adjustment: <?= $rule['adjustment_value'] > 0 ? '+' : '' ?><?= $rule['adjustment_value'] ?><?= $rule['adjustment_type'] === 'percentage' ? '%' : '₹' ?>
                                     </div>
                                 </div>
-                                <form method="POST" action="/user/rates/rule/toggle">
-                                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                                <form method="POST" action="<?= base_url('/user/rates/rule/toggle') ?>">
+                                    <?= csrf_field() ?>">
                                     <input type="hidden" name="rule_id" value="<?= $rule['id'] ?>">
                                     <button type="submit" class="text-xs font-bold px-2 py-1 rounded <?= $rule['status'] === 'active' ? 'bg-[var(--danger)] text-white' : 'bg-[var(--success)] text-white' ?>">
                                         <?= $rule['status'] === 'active' ? 'Disable' : 'Enable' ?>

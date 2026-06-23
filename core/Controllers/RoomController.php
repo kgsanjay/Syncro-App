@@ -9,11 +9,14 @@ use Syncro\Services\RoomService;
 
 class RoomController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
     private RoomService $roomService;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
-        parent::__construct(); 
+        $this->db = $db;
+        parent::__construct($db); 
         $this->roomService = new RoomService();
     }
 
@@ -21,17 +24,32 @@ class RoomController extends BaseHotelController
     {
         $this->requireRole(['hotel_admin']);
         
+        $cacheKey = "hotel_rooms_{$this->hotelId}";
+        $cache = \Syncro\Services\CacheManager::getInstance();
+        $cachedData = $cache->get($cacheKey);
+
+        if ($cachedData !== null && is_array($cachedData)) {
+            $rooms = $cachedData['rooms'];
+            $physicalRooms = $cachedData['physicalRooms'];
+        } else {
+            $rooms = $this->roomService->getRoomTypes($this->hotelId);
+            $physicalRooms = $this->roomService->getPhysicalRooms($this->hotelId);
+            $cache->set($cacheKey, [
+                'rooms' => $rooms,
+                'physicalRooms' => $physicalRooms
+            ]);
+        }
+
         $this->render('user/rooms', [
             'pageTitle'     => 'Property Rooms',
-            'rooms'         => $this->roomService->getRoomTypes($this->hotelId),
-            'physicalRooms' => $this->roomService->getPhysicalRooms($this->hotelId)
+            'rooms'         => $rooms,
+            'physicalRooms' => $physicalRooms
         ], 'user_layout');
     }
 
     public function storeRoomType(array $postData): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($postData);
 
         $name = strip_tags(trim($postData['name'] ?? ''));
         $localCode = strip_tags(trim($postData['local_room_code'] ?? ''));
@@ -47,6 +65,8 @@ class RoomController extends BaseHotelController
             $imageUrl = $this->processImageUpload($_FILES['room_image'] ?? null);
             $this->roomService->createRoomType($this->hotelId, $postData, $imageUrl);
             
+            \Syncro\Services\CacheManager::getInstance()->delete("hotel_rooms_{$this->hotelId}");
+
             SessionManager::setFlash('success', 'Room Category created successfully.');
             $this->redirect('/user/rooms');
         } catch (\Exception $e) {
@@ -59,7 +79,6 @@ class RoomController extends BaseHotelController
     public function updateRoomType(array $postData): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($postData);
 
         $roomId = (int)($postData['room_type_id'] ?? 0);
         if (!$roomId) { 
@@ -74,6 +93,8 @@ class RoomController extends BaseHotelController
 
             $this->roomService->updateRoomType($this->hotelId, $roomId, $postData, $imageUrl);
             
+            \Syncro\Services\CacheManager::getInstance()->delete("hotel_rooms_{$this->hotelId}");
+
             SessionManager::setFlash('success', 'Room Category updated successfully.');
             $this->redirect('/user/rooms');
         } catch (\Exception $e) {
@@ -85,11 +106,13 @@ class RoomController extends BaseHotelController
     public function deleteRoomType(array $postData): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($postData);
 
         $roomId = (int)($postData['room_type_id'] ?? 0);
         try {
             $this->roomService->deleteRoomType($this->hotelId, $roomId);
+            
+            \Syncro\Services\CacheManager::getInstance()->delete("hotel_rooms_{$this->hotelId}");
+
             SessionManager::setFlash('success', 'Room Category deleted.');
             $this->redirect('/user/rooms');
         } catch (\Exception $e) {
@@ -101,12 +124,13 @@ class RoomController extends BaseHotelController
     public function storePhysicalRoom(array $postData): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($postData);
 
         try {
             $imageUrl = $this->processImageUpload($_FILES['physical_image'] ?? null);
             $this->roomService->createPhysicalRoom($this->hotelId, $postData, $imageUrl);
             
+            \Syncro\Services\CacheManager::getInstance()->delete("hotel_rooms_{$this->hotelId}");
+
             SessionManager::setFlash('success', 'Physical Room added successfully.');
             $this->redirect('/user/rooms');
         } catch (\Exception $e) {
@@ -118,12 +142,13 @@ class RoomController extends BaseHotelController
     public function updatePhysicalRoom(array $postData): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($postData);
-        
+
         $roomId = (int)($postData['room_id'] ?? 0);
         try {
             $this->roomService->updatePhysicalRoom($this->hotelId, $roomId, $postData);
             
+            \Syncro\Services\CacheManager::getInstance()->delete("hotel_rooms_{$this->hotelId}");
+
             SessionManager::setFlash('success', 'Physical Room updated.');
             $this->redirect('/user/rooms');
         } catch (\Exception $e) {
@@ -135,12 +160,13 @@ class RoomController extends BaseHotelController
     public function deletePhysicalRoom(array $postData): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($postData);
-        
+
         $roomId = (int)($postData['room_id'] ?? 0);
         try {
             $this->roomService->deletePhysicalRoom($this->hotelId, $roomId);
             
+            \Syncro\Services\CacheManager::getInstance()->delete("hotel_rooms_{$this->hotelId}");
+
             SessionManager::setFlash('success', 'Physical Room deleted.');
             $this->redirect('/user/rooms');
         } catch (\Exception $e) {

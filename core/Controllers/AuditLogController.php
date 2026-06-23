@@ -9,13 +9,21 @@ use Throwable;
 
 class AuditLogController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function index(): void
     {
         // Only Hotel Admins should have access to security logs
         $this->requireRole(['hotel_admin']);
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             // FIX: We order by a.id DESC instead of created_at. 
             // This guarantees chronological order without risking a "Column not found" crash.

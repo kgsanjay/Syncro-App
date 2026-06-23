@@ -36,8 +36,8 @@
                     </h3>
                 </div>
                 
-                <form action="/user/pos/add" method="POST" class="p-6 space-y-5">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/pos/add') ?>" method="POST" class="p-6 space-y-5">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-xs font-bold text-[var(--header)] uppercase tracking-wider mb-2">Guest / Room</label>

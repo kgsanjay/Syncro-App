@@ -7,10 +7,10 @@ $plan6 = (int)($settings['plan_6_month'] ?? 6000);
 $plan12 = (int)($settings['plan_12_month'] ?? 10000);
 ?>
 <nav class="bg-[var(--white)] border-b border-[var(--border)] py-4 px-6 md:px-12 flex justify-between items-center z-10 relative shadow-sm">
-    <a href="/" class="text-2xl font-extrabold tracking-tight text-[var(--header)]">
+    <a href="<?= base_url('/') ?>" class="text-2xl font-extrabold tracking-tight text-[var(--header)]">
         SYNCRO<span class="text-[var(--theme)]">.</span>
     </a>
-    <a href="/login" class="text-sm font-bold text-[var(--text)] hover:text-[var(--theme2)] transition-colors">Already have an account? Log In</a>
+    <a href="<?= base_url('/login') ?>" class="text-sm font-bold text-[var(--text)] hover:text-[var(--theme2)] transition-colors">Already have an account? Log In</a>
 </nav>
 
 <div class="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full min-h-[calc(100vh-73px)]">
@@ -20,8 +20,8 @@ $plan12 = (int)($settings['plan_12_month'] ?? 10000);
         <h1 class="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-[var(--header)]">Select your license.</h1>
         <p class="text-[var(--text)] mb-10 font-medium">Choose your intended package. <strong class="text-[var(--theme2)]">No payment required today.</strong> Start your 14-day free trial instantly.</p>
 
-        <form action="/register/process-trial" method="POST" id="registrationForm" class="space-y-6">
-            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+        <form action="<?= base_url('/register/process-trial') ?>" method="POST" id="registrationForm" class="space-y-6">
+            <?= csrf_field() ?>">
 
             <div class="space-y-4">
                 

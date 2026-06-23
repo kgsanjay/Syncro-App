@@ -32,8 +32,8 @@
                     </h2>
                 </div>
                 <div class="p-8">
-                    <form action="/user/promo-codes/create" method="POST" class="space-y-6">
-                        <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                    <form action="<?= base_url('/user/promo-codes/create') ?>" method="POST" class="space-y-6">
+                        <?= csrf_field() ?>">
                         
                         <div>
                             <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] mb-2 opacity-40">Code Identifier</label>
@@ -106,8 +106,8 @@
                                             <?php endif; ?>
                                         </td>
                                         <td class="py-6 px-8 text-right">
-                                            <form action="/user/promo-codes/delete/<?= $promo['id'] ?>" method="POST" onsubmit="return confirm('Immediately revoke all system access for this privilege code?');" class="inline">
-                                                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                                            <form action="<?= base_url() ?>/user/promo-codes/delete/<?= $promo['id'] ?>" method="POST" onsubmit="return confirm('Immediately revoke all system access for this privilege code?');" class="inline">
+                                                <?= csrf_field() ?>">
                                                 <button type="submit" class="text-[10px] font-black text-[var(--danger)] hover:text-[var(--header)] uppercase tracking-[0.2em] transition-all hover:underline decoration-2 underline-offset-4">
                                                     Revoke
                                                 </button>

@@ -7,29 +7,33 @@ if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
     die('Direct access forbidden.');
 }
 
-// 1. Timezone Configuration for accurate audit logging
+// 1. Industry Standard Autoloader
+// Replaces the custom string-matching autoloader with Composer's optimized autoloader.
+$composerAutoloadPath = __DIR__ . '/../vendor/autoload.php';
+
+if (file_exists($composerAutoloadPath)) {
+    require_once $composerAutoloadPath;
+} else {
+    // Failsafe strictly for debugging; should never trigger in production
+    error_log("CRITICAL: Composer autoloader missing. Run 'composer install'.");
+    die("System misconfiguration. Please contact the administrator.");
+}
+
+// ==============================================================================
+// CRITICAL FIX 1: Load Environment Variables
+// ==============================================================================
+Dotenv\Dotenv::createImmutable(__DIR__ . '/../')->safeLoad();
+
+// 2. Timezone Configuration for accurate audit logging
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Asia/Kolkata');
 
 // ==============================================================================
-// CRITICAL FIX 1: Manually load the .env file so the Database can connect
+// DYNAMIC BASE URL (Handles both /syncro/ local and / production roots)
 // ==============================================================================
-$envPath = __DIR__ . '/../.env';
-if (file_exists($envPath)) {
-    $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        // Skip comments and empty lines
-        if (strpos(trim($line), '#') === 0) continue; 
-        
-        // Parse the key=value pairs
-        if (strpos($line, '=') !== false) {
-            list($name, $value) = explode('=', $line, 2);
-            $_ENV[trim($name)] = trim($value, "\"'");
-            putenv(trim($name) . '=' . trim($value, "\"'")); // Also set for getenv() usage
-        }
-    }
-}
+$baseDir = dirname($_SERVER['SCRIPT_NAME']);
+define('BASE_URL', $baseDir === '/' || $baseDir === '\\' ? '' : $baseDir);
 
-// 2. Strict Error Reporting (Zero Exposure Policy)
+// 3. Strict Error Reporting (Zero Exposure Policy)
 // In production, E_ALL is logged, but NEVER displayed to the browser (prevents path disclosure)
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -42,14 +46,7 @@ ini_set('log_errors', '1');
 $secureLogPath = __DIR__ . '/../error.log';
 ini_set('error_log', $secureLogPath);
 
-// 3. Industry Standard Autoloader
-// Replaces the custom string-matching autoloader with Composer's optimized autoloader.
-$composerAutoloadPath = __DIR__ . '/../vendor/autoload.php';
-
-if (file_exists($composerAutoloadPath)) {
-    require_once $composerAutoloadPath;
-} else {
-    // Failsafe strictly for debugging; should never trigger in production
-    error_log("CRITICAL: Composer autoloader missing. Run 'composer install'.");
-    die("System misconfiguration. Please contact the administrator.");
-}
+// ==============================================================================
+// 4. Load Global Helpers
+// ==============================================================================
+require_once __DIR__ . '/helpers.php';

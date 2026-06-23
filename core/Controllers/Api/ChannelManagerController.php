@@ -10,11 +10,13 @@ use Throwable;
 class ChannelManagerController
 {
     private int $hotelId;
+    private \Syncro\Models\Database $db;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
+        $this->db = $db;
         // Require API Authentication
-        $this->hotelId = ApiAuthMiddleware::authenticate();
+        $this->hotelId = (new \Syncro\Middleware\ApiAuthMiddleware())->handle();
     }
 
     /**
@@ -26,7 +28,7 @@ class ChannelManagerController
         header('Content-Type: application/json');
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             // Example: Simple availability logic
             // In a real channel manager, this would involve complex date-range calculations
@@ -74,7 +76,7 @@ class ChannelManagerController
                 return;
             }
 
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction();
 
             // 1. Find the requested room type

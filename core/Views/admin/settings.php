@@ -14,8 +14,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         <div class="lg:col-span-2 space-y-10">
-            <form action="/admin/settings/update" method="POST" class="bg-[var(--white)] rounded-3xl shadow-2xl border border-[var(--border)] overflow-hidden transition-all hover:shadow-indigo-500/5 group m-0">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/admin/settings/update') ?>" method="POST" class="bg-[var(--white)] rounded-3xl shadow-2xl border border-[var(--border)] overflow-hidden transition-all hover:shadow-indigo-500/5 group m-0">
+                <?= csrf_field() ?>">
                 
                 <div class="bg-[var(--header)] px-8 py-6 flex justify-between items-center group-hover:bg-[var(--theme2)] transition-colors">
                     <h2 class="text-[var(--white)] font-black tracking-[0.3em] uppercase text-[10px]">Infrastructure Billing & Liquid Logic</h2>
@@ -38,11 +38,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div class="space-y-3">
                             <label class="block text-[9px] font-black text-[var(--header)] uppercase tracking-[0.3em] opacity-40">Merchant Identifier (Primary)</label>
-                            <input type="text" name="phonepe_merchant_id" value="<?= htmlspecialchars($settings['phonepe_merchant_id'] ?? '') ?>" class="w-full px-6 py-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] focus:bg-[var(--white)] focus:border-[var(--theme2)] outline-none text-[14px] font-black shadow-inner transition-all font-mono">
+                            <input type="text" name="phonepe_merchant_id" value="<?= e($settings['phonepe_merchant_id'] ?? '') ?>" class="w-full px-6 py-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] focus:bg-[var(--white)] focus:border-[var(--theme2)] outline-none text-[14px] font-black shadow-inner transition-all font-mono">
                         </div>
                         <div class="space-y-3">
                             <label class="block text-[9px] font-black text-[var(--header)] uppercase tracking-[0.3em] opacity-40">HMAC Encryption Salt</label>
-                            <input type="password" name="phonepe_salt_key" value="<?= htmlspecialchars($settings['phonepe_salt_key'] ?? '') ?>" class="w-full px-6 py-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] focus:bg-[var(--white)] focus:border-[var(--theme2)] outline-none text-[14px] font-black shadow-inner transition-all font-mono">
+                            <input type="password" name="phonepe_salt_key" value="<?= e($settings['phonepe_salt_key'] ?? '') ?>" class="w-full px-6 py-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] focus:bg-[var(--white)] focus:border-[var(--theme2)] outline-none text-[14px] font-black shadow-inner transition-all font-mono">
                         </div>
                     </div>
 
@@ -59,10 +59,10 @@
                                 foreach($plans as $p):
                             ?>
                             <div class="group/tier">
-                                <label class="block text-[8px] font-black text-[var(--text)] uppercase tracking-widest mb-3 opacity-40 group-hover/tier:opacity-100 transition-opacity"><?= $p['label'] ?></label>
+                                <label class="block text-[8px] font-black text-[var(--text)] uppercase tracking-widest mb-3 opacity-40 group-hover/tier:opacity-100 transition-opacity"><?= e((string) $p['label']) ?></label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text)] font-black text-xs opacity-30">₹</span>
-                                    <input type="number" name="<?= $p['key'] ?>" value="<?= (int)($settings[$p['key']] ?? 0) ?>" class="w-full pl-8 pr-4 py-4 rounded-xl border-2 border-[var(--border)] bg-[var(--light)] font-black text-[var(--theme2)] focus:bg-[var(--white)] focus:border-[var(--theme)] outline-none transition-all text-sm shadow-inner group-hover/tier:scale-105">
+                                    <input type="number" name="<?= e((string) $p['key']) ?>" value="<?= (int)($settings[$p['key']] ?? 0) ?>" class="w-full pl-8 pr-4 py-4 rounded-xl border-2 border-[var(--border)] bg-[var(--light)] font-black text-[var(--theme2)] focus:bg-[var(--white)] focus:border-[var(--theme)] outline-none transition-all text-sm shadow-inner group-hover/tier:scale-105">
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -82,8 +82,8 @@
         </div>
 
         <div class="lg:col-span-1">
-            <form action="/admin/settings/password" method="POST" class="bg-[var(--white)] rounded-3xl shadow-2xl border border-[var(--border)] overflow-hidden transition-all hover:shadow-indigo-500/5 group h-fit m-0">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/admin/settings/password') ?>" method="POST" class="bg-[var(--white)] rounded-3xl shadow-2xl border border-[var(--border)] overflow-hidden transition-all hover:shadow-indigo-500/5 group h-fit m-0">
+                <?= csrf_field() ?>">
                 
                 <div class="bg-[var(--theme)] px-8 py-6 flex justify-between items-center group-hover:bg-[var(--theme2)] transition-colors">
                     <h2 class="text-[var(--header)] font-black tracking-[0.3em] uppercase text-[10px] group-hover:text-[var(--white)] transition-colors">Security Core</h2>
@@ -125,8 +125,8 @@
                                 <p class="text-[9px] font-black uppercase tracking-widest opacity-60 mt-1 text-[var(--header)]">Google Authenticator Enabled</p>
                             </div>
                         </div>
-                        <form action="/admin/settings/2fa/disable" method="POST">
-                            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                        <form action="<?= base_url('/admin/settings/2fa/disable') ?>" method="POST">
+                            <?= csrf_field() ?>">
                             <button type="submit" class="w-full bg-red-500/10 border-2 border-red-500 text-red-600 font-black uppercase tracking-[0.3em] text-[10px] py-4 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-lg transform hover:-translate-y-1 active:scale-95" onclick="return confirm('Are you sure you want to disable 2FA? This will reduce your account security.')">
                                 Disable 2FA Security
                             </button>
@@ -139,7 +139,7 @@
                                 <p class="text-[9px] font-black uppercase tracking-widest opacity-60 mt-1 text-[var(--header)]">Account Vulnerable (No 2FA)</p>
                             </div>
                         </div>
-                        <a href="/admin/settings/2fa/setup" class="block text-center w-full bg-[var(--theme)] text-[var(--header)] font-black uppercase tracking-[0.3em] text-[10px] py-4 rounded-xl hover:bg-[var(--theme2)] hover:text-[var(--white)] transition-all shadow-lg transform hover:-translate-y-1 active:scale-95">
+                        <a href="<?= base_url('/admin/settings/2fa/setup') ?>" class="block text-center w-full bg-[var(--theme)] text-[var(--header)] font-black uppercase tracking-[0.3em] text-[10px] py-4 rounded-xl hover:bg-[var(--theme2)] hover:text-[var(--white)] transition-all shadow-lg transform hover:-translate-y-1 active:scale-95">
                             Enable Google Authenticator
                         </a>
                     <?php endif; ?>

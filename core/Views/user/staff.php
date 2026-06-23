@@ -40,7 +40,7 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
                                     <?= \Syncro\Security\SecurityManager::sanitizeOutput($member['role']) ?>
                                 </span>
-                                <form method="POST" action="/user/staff/revoke" onsubmit="return confirm('Revoke access for this user?');">
+                                <form method="POST" action="<?= base_url('/user/staff/revoke') ?>" onsubmit="return confirm('Revoke access for this user?');">
                                     <input type="hidden" name="staff_id" value="<?= $member['id'] ?>">
                                     <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">Revoke</button>
                                 </form>
@@ -70,7 +70,7 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
                                     <?= \Syncro\Security\SecurityManager::sanitizeOutput($invite['role']) ?>
                                 </span>
-                                <form method="POST" action="/user/staff/invite/revoke">
+                                <form method="POST" action="<?= base_url('/user/staff/invite/revoke') ?>">
                                     <input type="hidden" name="invite_id" value="<?= $invite['id'] ?>">
                                     <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">Cancel</button>
                                 </form>
@@ -91,7 +91,7 @@
             <h3 class="text-lg font-medium text-gray-900">Invite Staff Member</h3>
             <button onclick="document.getElementById('inviteModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-500">&times;</button>
         </div>
-        <form action="/user/staff/invite" method="POST" class="p-6 space-y-4">
+        <form action="<?= base_url('/user/staff/invite') ?>" method="POST" class="p-6 space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                 <input type="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">

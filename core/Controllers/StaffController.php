@@ -11,6 +11,14 @@ use PDO;
 
 class StaffController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     /**
      * Show staff management page
      */
@@ -18,7 +26,7 @@ class StaffController extends BaseHotelController
     {
         $this->requireRole(['hotel_admin']);
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         // Get active staff
         $stmt = $db->prepare("
@@ -68,7 +76,7 @@ class StaffController extends BaseHotelController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             // Check if user already exists
             $stmt = $db->prepare("SELECT id FROM users WHERE email = :email");
@@ -119,7 +127,7 @@ class StaffController extends BaseHotelController
         $staffId = (int)($post['staff_id'] ?? 0);
         
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             // Delete staff member (or mark suspended)
             $stmt = $db->prepare("DELETE FROM users WHERE id = :id AND hotel_id = :hotel_id AND role IN ('receptionist', 'housekeeper')");
             $stmt->execute(['id' => $staffId, 'hotel_id' => $this->hotelId]);
@@ -140,7 +148,7 @@ class StaffController extends BaseHotelController
         $inviteId = (int)($post['invite_id'] ?? 0);
         
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("DELETE FROM staff_invitations WHERE id = :id AND hotel_id = :hotel_id");
             $stmt->execute(['id' => $inviteId, 'hotel_id' => $this->hotelId]);
             

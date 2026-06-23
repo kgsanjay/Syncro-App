@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 
 <div class="mb-6 flex items-center justify-between">
-    <a href="/user/guests" class="text-[var(--text)] hover:text-[var(--theme2)] font-bold text-sm flex items-center transition-colors">
+    <a href="<?= base_url('/user/guests') ?>" class="text-[var(--text)] hover:text-[var(--theme2)] font-bold text-sm flex items-center transition-colors">
         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         Back to Directory
     </a>
@@ -79,7 +79,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="p-5 text-right">
-                    <a href="/user/invoice?id=<?= $stay['id'] ?>" class="inline-flex items-center px-4 py-2 bg-[var(--header)] text-[var(--theme)] text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-[var(--theme2)] hover:text-[var(--white)] transition-all shadow-lg active:scale-95">
+                    <a href="<?= base_url() ?>/user/invoice?id=<?= $stay['id'] ?>" class="inline-flex items-center px-4 py-2 bg-[var(--header)] text-[var(--theme)] text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-[var(--theme2)] hover:text-[var(--white)] transition-all shadow-lg active:scale-95">
                         Archive &rarr;
                     </a>
                 </td>

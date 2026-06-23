@@ -11,7 +11,7 @@
             <p class="mt-1 text-sm text-[var(--text)] font-medium">Manage all guest folios, walk-ins, and online bookings.</p>
         </div>
         <div class="flex gap-3">
-            <a href="/export/bookings" class="bg-[var(--white)] text-[var(--header)] border border-[var(--border)] font-bold py-2.5 px-5 rounded shadow-sm hover:bg-gray-50 hover:shadow transition-all text-sm flex items-center">
+            <a href="<?= base_url('/export/bookings') ?>" class="bg-[var(--white)] text-[var(--header)] border border-[var(--border)] font-bold py-2.5 px-5 rounded shadow-sm hover:bg-gray-50 hover:shadow transition-all text-sm flex items-center">
                 <svg class="w-4 h-4 mr-2 text-[var(--text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Export CSV
             </a>
@@ -113,8 +113,8 @@
                             </td>
 
                             <td class="px-6 py-4 whitespace-nowrap align-top">
-                                <form action="/user/bookings/payment" method="POST" class="mb-2">
-                                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken) ?>">
+                                <form action="<?= base_url('/user/bookings/payment') ?>" method="POST" class="mb-2">
+                                    <?= csrf_field() ?>">
                                     <input type="hidden" name="booking_id" value="<?= $booking['id'] ?>">
                                     
                                     <select name="payment_status" onchange="this.form.submit()" class="text-[10px] font-black uppercase tracking-[0.2em] border-2 border-[var(--border)] rounded-lg px-2.5 py-1.5 outline-none cursor-pointer focus:ring-4 focus:ring-[var(--theme2)]/10 focus:border-[var(--theme2)] transition-all <?= $booking['payment_status'] === 'paid' ? 'bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/30' : 'bg-[var(--danger)]/10 text-[var(--danger)] border-[var(--danger)]/30' ?>">
@@ -127,15 +127,15 @@
                                     </select>
                                 </form>
                                 
-                                <a href="/user/invoice?id=<?= $booking['id'] ?>" class="text-[10px] font-bold text-[var(--theme2)] hover:text-[var(--header)] inline-flex items-center">
+                                <a href="<?= base_url() ?>/user/invoice?id=<?= $booking['id'] ?>" class="text-[10px] font-bold text-[var(--theme2)] hover:text-[var(--header)] inline-flex items-center">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     View Folio
                                 </a>
                             </td>
 
                             <td class="px-6 py-4 whitespace-nowrap text-right align-top">
-                                <form action="/user/bookings/status" method="POST" class="flex justify-end">
-                                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken) ?>">
+                                <form action="<?= base_url('/user/bookings/status') ?>" method="POST" class="flex justify-end">
+                                    <?= csrf_field() ?>">
                                     <input type="hidden" name="booking_id" value="<?= $booking['id'] ?>">
                                     
                                     <select name="status" onchange="this.form.submit()" class="text-xs font-bold border border-[var(--border)] rounded px-2 py-1.5 outline-none cursor-pointer focus:ring-2 focus:ring-[var(--theme2)] text-[var(--header)] bg-[var(--light)]">
@@ -172,9 +172,9 @@
                 </button>
             </div>
             
-            <form action="/user/bookings" method="POST">
+            <form action="<?= base_url('/user/bookings') ?>" method="POST">
                 <div class="px-6 py-6 space-y-4">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-xs font-bold text-[var(--header)] uppercase tracking-wider mb-1">Guest Full Name</label>
@@ -235,9 +235,9 @@
                 </button>
             </div>
             
-            <form action="/user/bookings/assign" method="POST">
+            <form action="<?= base_url('/user/bookings/assign') ?>" method="POST">
                 <div class="px-6 py-6 space-y-4">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                    <?= csrf_field() ?>">
                     <input type="hidden" name="booking_id" id="assign_booking_id" value="">
                     
                     <div>

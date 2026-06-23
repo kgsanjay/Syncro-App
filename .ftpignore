@@ -1,0 +1,29 @@
+# Ignore Git and GitHub related metadata
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Ignore Environment Configuration
+.env
+.env.example
+
+# Ignore Testing and Development Tooling
+tests/
+phpunit.xml
+phpstan.neon
+
+# Ignore Local Logs and Cache
+storage/logs/
+storage/framework/cache/
+
+# Ignore Node.js Dependencies (if compiling frontend assets)
+node_modules/
+package.json
+package-lock.json
+
+# Ignore Temporary Agent Artifacts
+scratch/
+task.md
+walkthrough.md
+implementation_plan.md

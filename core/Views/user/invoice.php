@@ -14,7 +14,7 @@
             padding: 0 !important;
             border: none !important;
             box-shadow: none !important;
-            color: #000 !important; /* Force black text for crisp printing */
+            color: var(--header) !important; /* Force black text for crisp printing */
         }
         * {
             -webkit-print-color-adjust: exact !important;
@@ -29,7 +29,7 @@
 <div class="max-w-[900px] mx-auto pb-12">
 
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
-        <a href="/user/bookings" class="text-[var(--text)] hover:text-[var(--theme2)] text-sm font-bold flex items-center transition-colors">
+        <a href="<?= base_url('/user/bookings') ?>" class="text-[var(--text)] hover:text-[var(--theme2)] text-sm font-bold flex items-center transition-colors">
             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Back to Reservations
         </a>
@@ -183,8 +183,8 @@
                     Post Incidental Charge
                 </h3>
             </div>
-            <form action="/user/invoice/charge" method="POST" class="p-6 m-0 space-y-5">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/user/invoice/charge') ?>" method="POST" class="p-6 m-0 space-y-5">
+                <?= csrf_field() ?>">
                 <input type="hidden" name="booking_id" value="<?= $booking['id'] ?>">
                 
                 <div class="grid grid-cols-3 gap-6">
@@ -211,8 +211,8 @@
                     Record Payment
                 </h3>
             </div>
-            <form action="/user/payment/store" method="POST" class="p-6 m-0 space-y-5">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/user/payment/store') ?>" method="POST" class="p-6 m-0 space-y-5">
+                <?= csrf_field() ?>">
                 <input type="hidden" name="booking_id" value="<?= $booking['id'] ?>">
                 
                 <div class="grid grid-cols-2 gap-6">

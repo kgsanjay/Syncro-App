@@ -5,20 +5,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken ?? '') ?>">
+    <?= csrf_meta() ?>">
     
     <title><?= \Syncro\Security\SecurityManager::sanitizeOutput($pageTitle ?? 'Syncro') ?></title>
     
-    <script src="/assets/js/tailwindcss.js?v=1.0"></script>
+    <script src="<?= base_url('/assets/js/tailwindcss.js?v=1.0') ?>"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/app.css?v=1.0">
+    <link rel="stylesheet" href="<?= base_url('/assets/css/app.css?v=1.0') ?>">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        theme: '#4f46e5', theme2: '#312e81', header: '#0f172a',
-                        text: '#475569', light: '#f8fafc', border: '#e2e8f0', white: '#ffffff',
+                        theme: 'var(--theme2)', theme2: 'var(--theme2)', header: 'var(--header)',
+                        text: 'var(--text)', light: 'var(--light)', border: 'var(--border)', white: 'var(--white)',
                     },
                     fontFamily: { 
                         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -37,7 +37,7 @@
         }
     </style>
     <style>
-        :root { --theme: #FFC107; --theme2: #003366; --header: #002244; --text: #555555; --light: #f8f9fa; --border: #eef1f6; --white: #ffffff; }
+        :root { --theme: var(--theme); --theme2: var(--header); --header: var(--header); --text: var(--text); --light: var(--light); --border: var(--light); --white: var(--white); }
         html { scroll-behavior: smooth; }
         body { background-color: var(--light); color: var(--text); -webkit-font-smoothing: antialiased; }
     </style>

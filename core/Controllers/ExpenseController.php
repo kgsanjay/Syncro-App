@@ -10,11 +10,19 @@ use PDO;
 
 class ExpenseController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function index(): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         $month = $_GET['month'] ?? date('Y-m');
 
@@ -36,7 +44,6 @@ class ExpenseController extends BaseHotelController
     public function store(array $post): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($post);
 
         $category = trim($post['category'] ?? '');
         $amount = (float)($post['amount'] ?? 0);
@@ -49,7 +56,7 @@ class ExpenseController extends BaseHotelController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("
                 INSERT INTO expenses (hotel_id, category, amount, date, description)
                 VALUES (:hotel_id, :category, :amount, :date, :description)
@@ -71,12 +78,11 @@ class ExpenseController extends BaseHotelController
     public function delete(array $post): void
     {
         $this->requireRole(['hotel_admin']);
-        $this->validateCsrf($post);
 
         $id = (int)($post['expense_id'] ?? 0);
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("DELETE FROM expenses WHERE id = :id AND hotel_id = :hotel_id");
             $stmt->execute(['id' => $id, 'hotel_id' => $this->hotelId]);
 

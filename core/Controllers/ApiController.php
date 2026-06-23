@@ -11,6 +11,13 @@ use PDO;
 
 class ApiController extends BaseController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+    }
+
     private function jsonResponse(array $data, int $statusCode = 200): void
     {
         http_response_code($statusCode);
@@ -33,7 +40,7 @@ class ApiController extends BaseController
         $startDate = $_GET['start_date'] ?? date('Y-m-d');
         $endDate = $_GET['end_date'] ?? date('Y-m-d', strtotime('+7 days'));
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->prepare("
             SELECT rt.id as room_type_id, rt.name, i.target_date, i.available_rooms, i.dynamic_price, i.stop_sell
@@ -90,6 +97,14 @@ class ApiController extends BaseController
             $bookingService = new BookingService();
             $bookingId = $bookingService->createDirectBooking($hotelId, $data);
             
+            \Syncro\Services\RealtimeBroadcaster::broadcast("private-hotel-{$hotelId}", 'NewBookingEvent', [
+                'bookingId' => $bookingId,
+                'guestName' => $data['guest_name'] ?? 'Guest',
+                'checkIn' => $data['check_in'] ?? '',
+                'checkOut' => $data['check_out'] ?? '',
+                'totalPrice' => $data['total_price'] ?? 0,
+                'source' => $data['source'] ?? 'OTA'
+            ]);
             $this->jsonResponse([
                 'success' => true,
                 'message' => 'Booking created successfully',

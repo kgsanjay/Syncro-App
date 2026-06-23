@@ -9,6 +9,12 @@ use Syncro\Security\SecurityManager;
 
 class AjaxInventoryController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct()
+    {
+        $this->db = new \Syncro\Models\Database();
+    }
     public function update(): void
     {
         header('Content-Type: application/json; charset=utf-8');
@@ -22,19 +28,13 @@ class AjaxInventoryController
 
         $input = json_decode(file_get_contents('php://input'), true);
 
-        if (!SecurityManager::validateCsrfToken($input['csrf_token'] ?? '')) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'CSRF Token Invalid']);
-            return;
-        }
-
         $roomId = (int)($input['room_id'] ?? 0);
         $targetDate = $input['target_date'] ?? '';
         $field = $input['field'] ?? '';
         $value = $input['value'] ?? '';
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             $stmt = $db->prepare("
                 SELECT r.id FROM room_types r 
@@ -93,11 +93,6 @@ class AjaxInventoryController
         }
 
         $input = json_decode(file_get_contents('php://input'), true);
-        if (!SecurityManager::validateCsrfToken($input['csrf_token'] ?? '')) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'CSRF Token Invalid']);
-            return;
-        }
 
         try {
             // OPTIMIZED: Reliable absolute path generation to the root cron folder
@@ -126,7 +121,7 @@ class AjaxInventoryController
         }
     }
     
-    public function updateHousekeeping(): void
+    public function updateHousekeeping(array $postData = []): void
     {
         header('Content-Type: application/json; charset=utf-8');
         
@@ -138,16 +133,10 @@ class AjaxInventoryController
         }
 
         // Parse JSON payload correctly
-        $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-
-        if (!SecurityManager::validateCsrfToken($input['csrf_token'] ?? '')) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'CSRF Token Invalid']);
-            return;
-        }
+        $input = json_decode(file_get_contents('php://input'), true) ?? $postData;
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             // Robust tenant lookup supporting both Hotel Admins and Staff
             $stmt = $db->prepare("

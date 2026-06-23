@@ -21,8 +21,8 @@
                     <svg class="w-4 h-4 mr-2 text-[var(--theme2)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Create Room Type
                 </h3>
-                <form action="/user/rooms" method="POST" enctype="multipart/form-data" class="space-y-4">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/rooms') ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-[10px] font-bold text-[var(--text)] uppercase tracking-wider mb-1">Display Name</label>
@@ -98,8 +98,8 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <form action="/user/rooms/delete" method="POST" onsubmit="return confirm('Delete this room type? This will fail if bookings exist.');" class="inline-block">
-                                            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                                        <form action="<?= base_url('/user/rooms/delete') ?>" method="POST" onsubmit="return confirm('Delete this room type? This will fail if bookings exist.');" class="inline-block">
+                                            <?= csrf_field() ?>">
                                             <input type="hidden" name="room_type_id" value="<?= (int)$type['id'] ?>">
                                             <button type="submit" class="text-[10px] uppercase tracking-widest text-[var(--theme)] bg-[var(--white)] border border-[var(--border)] hover:bg-[var(--header)] hover:border-[var(--header)] px-3 py-1.5 rounded transition-colors font-bold shadow-sm">
                                                 Delete
@@ -129,8 +129,8 @@
                     <svg class="w-4 h-4 mr-2 text-[var(--theme2)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                     Add Door Number
                 </h3>
-                <form action="/user/rooms/physical" method="POST" enctype="multipart/form-data" class="space-y-4">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/rooms/physical') ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-[10px] font-bold text-[var(--text)] uppercase tracking-wider mb-1">Assign to Room Type</label>
@@ -192,8 +192,8 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <form action="/user/rooms/physical/delete" method="POST" onsubmit="return confirm('Remove this physical room?');" class="inline-block">
-                                            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                                        <form action="<?= base_url('/user/rooms/physical/delete') ?>" method="POST" onsubmit="return confirm('Remove this physical room?');" class="inline-block">
+                                            <?= csrf_field() ?>">
                                             <input type="hidden" name="room_id" value="<?= (int)$pr['id'] ?>">
                                             <button type="submit" class="text-[10px] uppercase tracking-widest text-[var(--text)] hover:text-[var(--theme)] transition-colors font-bold flex items-center ml-auto">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>

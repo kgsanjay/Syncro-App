@@ -20,8 +20,8 @@
             </div>
             
             <div class="p-6">
-                <form action="/user/support" method="POST" enctype="multipart/form-data" class="space-y-5">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/support') ?>" method="POST" enctype="multipart/form-data" class="space-y-5">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-[11px] font-bold text-[var(--header)] uppercase tracking-wider mb-2">Subject</label>
@@ -75,7 +75,7 @@
                             <tr><td colspan="3" class="px-6 py-12 text-center text-sm font-medium text-[var(--text)]">You have no open support tickets.</td></tr>
                         <?php else: ?>
                             <?php foreach ($tickets as $t): ?>
-                            <tr class="hover:bg-[var(--light)] transition-colors group cursor-pointer" onclick="window.location.href='/user/support/view?id=<?= $t['id'] ?>'">
+                            <tr class="hover:bg-[var(--light)] transition-colors group cursor-pointer" onclick="window.location.href='<?= base_url() ?>/user/support/view?id=<?= $t['id'] ?>'">
                                 <td class="px-6 py-5">
                                     <div class="text-[14px] font-bold text-[var(--theme2)] group-hover:text-[var(--header)] transition-colors mb-1">
                                         <?= htmlspecialchars($t['subject']) ?>

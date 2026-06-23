@@ -1,18 +1,18 @@
 <div class="max-w-[1200px] mx-auto pb-10">
 
     <div class="mb-10">
-        <a href="/admin/support" class="text-[var(--theme2)] hover:text-[var(--header)] font-black text-[10px] uppercase tracking-[0.2em] flex items-center transition-all mb-6 w-fit group">
+        <a href="<?= base_url('/admin/support') ?>" class="text-[var(--theme2)] hover:text-[var(--header)] font-black text-[10px] uppercase tracking-[0.2em] flex items-center transition-all mb-6 w-fit group">
             <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Back to Queue
         </a>
         <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div>
                 <h1 class="text-3xl font-black text-[var(--header)] tracking-tighter mb-2">
-                    <?= htmlspecialchars($ticket['subject']) ?>
+                    <?= e($ticket['subject']) ?>
                 </h1>
                 <div class="text-[10px] text-[var(--text)] font-black uppercase tracking-[0.2em] mt-3 flex items-center gap-4 opacity-40">
-                    <span class="flex items-center"><div class="w-2 h-2 rounded-full bg-[var(--theme2)] mr-2"></div> Property: <?= htmlspecialchars($ticket['property_name']) ?></span>
-                    <span class="flex items-center"><div class="w-1.5 h-1.5 rounded-full bg-[var(--border)] mr-2"></div> Author: <?= htmlspecialchars($ticket['user_name']) ?></span>
+                    <span class="flex items-center"><div class="w-2 h-2 rounded-full bg-[var(--theme2)] mr-2"></div> Property: <?= e($ticket['property_name']) ?></span>
+                    <span class="flex items-center"><div class="w-1.5 h-1.5 rounded-full bg-[var(--border)] mr-2"></div> Author: <?= e($ticket['user_name']) ?></span>
                     
                     <?php 
                         $priorityStyles = [
@@ -22,15 +22,15 @@
                         ];
                         $pStyle = $priorityStyles[$ticket['priority'] ?? 'normal'] ?? $priorityStyles['normal'];
                     ?>
-                    <span class="ml-4 px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] shadow-xl <?= $pStyle ?>">
+                    <span class="ml-4 px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-[0.2em] shadow-xl <?= e((string) $pStyle) ?>">
                         <?= ucfirst($ticket['priority'] ?? 'Normal') ?> Level
                     </span>
                 </div>
             </div>
             
-            <form action="/admin/support/status" method="POST" class="m-0">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
+            <form action="<?= base_url('/admin/support/status') ?>" method="POST" class="m-0">
+                <?= csrf_field() ?>">
+                <input type="hidden" name="ticket_id" value="<?= e((string) $ticket['id']) ?>">
                 <div class="relative">
                     <select name="status" onchange="this.form.submit()" class="text-[10px] font-black uppercase tracking-[0.3em] px-8 py-4 border-2 border-[var(--border)] rounded-2xl focus:ring-0 focus:border-[var(--theme2)] outline-none cursor-pointer bg-[var(--white)] text-[var(--header)] appearance-none shadow-xl hover:-translate-y-1 transition-all">
                         <option value="open" <?= $ticket['status'] === 'open' ? 'selected' : '' ?>>Awaiting Agent</option>
@@ -49,7 +49,7 @@
             <div class="w-8 h-8 rounded-lg bg-[var(--success)]/10 text-[var(--success)] flex items-center justify-center mr-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]"><?= htmlspecialchars($successMsg) ?></p>
+            <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]"><?= e($successMsg) ?></p>
         </div>
     <?php endif; ?>
 
@@ -63,20 +63,20 @@
                     <div class="max-w-[85%] md:max-w-[75%] lg:max-w-[65%]">
                         <div class="flex items-center mb-2 <?= $isAdmin ? 'justify-end' : '' ?> opacity-40">
                             <span class="text-[9px] font-black text-[var(--text)] uppercase tracking-[0.2em]">
-                                <?= $isAdmin ? 'Sovereign Representative' : htmlspecialchars($reply['sender_name'] ?? 'Tenant User') ?>
+                                <?= $isAdmin ? 'Sovereign Representative' : e($reply['sender_name'] ?? 'Tenant User') ?>
                             </span>
                             <span class="text-[9px] font-bold ml-4 font-mono">
                                 <?= date('H:i:s @ d.M.Y', strtotime($reply['created_at'])) ?>
                             </span>
                         </div>
                         <div class="p-6 rounded-2xl shadow-xl text-[14px] font-medium leading-relaxed whitespace-pre-wrap transition-all transform hover:scale-[1.01] <?= $isAdmin ? 'bg-[var(--header)] text-[var(--white)] rounded-tr-none shadow-[var(--header)]/10' : 'bg-[var(--white)] border border-[var(--border)] text-[var(--header)] rounded-tl-none' ?>">
-                            <?= nl2br(htmlspecialchars($reply['message'])) ?>
+                            <?= nl2br(e($reply['message'])) ?>
                             
                             <?php if (!empty($reply['attachment_path'])): ?>
                                 <div class="mt-6 pt-6 border-t <?= $isAdmin ? 'border-[var(--white)]/10' : 'border-[var(--border)]/50' ?>">
-                                    <a href="<?= htmlspecialchars($reply['attachment_path']) ?>" target="_blank" class="block group/asset relative overflow-hidden rounded-xl">
+                                    <a href="<?= e($reply['attachment_path']) ?>" target="_blank" class="block group/asset relative overflow-hidden rounded-xl">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center font-black text-[var(--white)] text-[10px] uppercase tracking-[0.3em] backdrop-blur-sm">View Expansion</div>
-                                        <img src="<?= htmlspecialchars($reply['attachment_path']) ?>" alt="Telemetry Attachment" class="max-h-64 w-full object-cover rounded-xl border <?= $isAdmin ? 'border-[var(--white)]/20' : 'border-[var(--border)]' ?> transition-transform duration-500 group-hover/asset:scale-110">
+                                        <img src="<?= e($reply['attachment_path']) ?>" alt="Telemetry Attachment" class="max-h-64 w-full object-cover rounded-xl border <?= $isAdmin ? 'border-[var(--white)]/20' : 'border-[var(--border)]' ?> transition-transform duration-500 group-hover/asset:scale-110">
                                     </a>
                                 </div>
                             <?php endif; ?>
@@ -87,9 +87,9 @@
         </div>
 
         <div class="p-8 bg-[var(--white)] border-t-2 border-[var(--border)]/50">
-            <form action="/admin/support/reply" method="POST" enctype="multipart/form-data" class="flex flex-col gap-6 m-0">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
+            <form action="<?= base_url('/admin/support/reply') ?>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-6 m-0">
+                <?= csrf_field() ?>">
+                <input type="hidden" name="ticket_id" value="<?= e((string) $ticket['id']) ?>">
                 
                 <div id="imagePreviewContainer" class="hidden relative w-fit mb-4">
                     <img id="imagePreview" src="" class="max-h-40 rounded-2xl border-2 border-[var(--theme2)] shadow-2xl object-cover animate-in fade-in zoom-in duration-300">

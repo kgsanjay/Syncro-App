@@ -9,6 +9,14 @@ use Exception;
 
 class InvoiceController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function show(): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
@@ -19,7 +27,7 @@ class InvoiceController extends BaseHotelController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         // Fetch Booking
         $stmt = $db->prepare("

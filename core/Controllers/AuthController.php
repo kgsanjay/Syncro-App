@@ -8,14 +8,18 @@ use Syncro\Security\SessionManager;
 use Syncro\Security\SecurityManager;
 use Syncro\Services\TwoFactorService;
 use PDO;
+use Exception;
 
 class AuthController extends BaseController
 {
+    private \Syncro\Models\Database $db;
+
     private const MAX_ATTEMPTS = 5;
     private const LOCKOUT_MINUTES = 15;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
+        $this->db = $db;
         // Fix: Ensure session and CSRF tokens are loaded before ANY method runs
         SessionManager::start();
     }
@@ -39,11 +43,6 @@ class AuthController extends BaseController
         $password = $postData['password'] ?? '';
         $csrfToken = $postData['csrf_token'] ?? '';
 
-        if (!SecurityManager::validateCsrfToken($csrfToken)) {
-            $this->redirect('/login?error=' . urlencode('Security Violation: CSRF token mismatch.'));
-            return;
-        }
-
         if (empty($email) || empty($password)) {
             $this->redirect('/login?error=' . urlencode('Email and password are required.'));
             return;
@@ -55,7 +54,7 @@ class AuthController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -122,6 +121,7 @@ class AuthController extends BaseController
             $this->completeLogin(
                 (int)$user['id'], 
                 $user['role'], 
+                $user['role_id'] ? (int)$user['role_id'] : null,
                 $user['hotel_id'] ? (int)$user['hotel_id'] : null, 
                 $user['name'], 
                 $ipAddress
@@ -133,16 +133,17 @@ class AuthController extends BaseController
         }
     }
 
-    private function completeLogin(int $userId, string $role, ?int $hotelId, ?string $name, string $ipAddress): void
+    private function completeLogin(int $userId, string $role, ?int $roleId, ?int $hotelId, ?string $name, string $ipAddress): void
     {
         SessionManager::regenerate(); 
         $_SESSION['user_id']       = $userId;
         $_SESSION['role']          = $role;
+        $_SESSION['role_id']       = $roleId;
         $_SESSION['hotel_id']      = $hotelId;
         $_SESSION['name']          = $name;
         $_SESSION['last_activity'] = time();
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("INSERT INTO audit_logs (hotel_id, user_id, action_type, description, ip_address) VALUES (:hid, :uid, 'USER_LOGIN', 'Successful login via web portal.', :ip)");
         $stmt->execute([
             'hid' => $hotelId, // now allows NULL for super_admin
@@ -174,15 +175,11 @@ class AuthController extends BaseController
         }
 
         $csrfToken = $postData['csrf_token'] ?? '';
-        if (!SecurityManager::validateCsrfToken($csrfToken)) {
-            $this->redirect('/login?error=' . urlencode('Security Violation: CSRF token mismatch.'));
-            return;
-        }
 
         $code = preg_replace('/[^0-9]/', '', $postData['code'] ?? '');
         $userId = (int)$_SESSION['2fa_pending_user_id'];
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
         $stmt->execute(['id' => $userId]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -220,7 +217,7 @@ class AuthController extends BaseController
 
         if ($isValid) {
             unset($_SESSION['2fa_pending_user_id']);
-            $this->completeLogin($userId, $user['role'], $user['hotel_id'] ? (int)$user['hotel_id'] : null, $user['name'], $ipAddress);
+            $this->completeLogin($userId, $user['role'], $user['role_id'] ? (int)$user['role_id'] : null, $user['hotel_id'] ? (int)$user['hotel_id'] : null, $user['name'], $ipAddress);
         } else {
             $this->logAttempt($user['email'], $ipAddress, false);
             $this->render('admin/login_2fa', [
@@ -236,7 +233,7 @@ class AuthController extends BaseController
 
     public function showRegister(): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->query("SELECT setting_key, setting_value FROM platform_settings");
         $settings = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -251,9 +248,6 @@ class AuthController extends BaseController
 
     public function processTrialRegistration(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            die("Security Violation");
-        }
 
         $propertyName = strip_tags(trim($postData['property_name'] ?? ''));
         $slug = strip_tags(trim($postData['slug'] ?? ''));
@@ -269,7 +263,7 @@ class AuthController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         try {
             $db->beginTransaction();
@@ -359,7 +353,7 @@ class AuthController extends BaseController
 
     public function showAcceptInvite(string $token): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("SELECT email FROM staff_invitations WHERE token = :token AND expires_at > NOW()");
         $stmt->execute(['token' => $token]);
         $invite = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -387,7 +381,7 @@ class AuthController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         try {
             $db->beginTransaction();
@@ -433,7 +427,7 @@ class AuthController extends BaseController
 
     private function isRateLimited(string $email, string $ipAddress): bool
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("
             SELECT COUNT(*) FROM login_attempts 
             WHERE (ip_address = :ip OR email = :email) 
@@ -446,8 +440,41 @@ class AuthController extends BaseController
 
     private function logAttempt(string $email, string $ipAddress, bool $success): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("INSERT INTO login_attempts (email, ip_address, success) VALUES (:email, :ip, :success)");
         $stmt->execute(['email' => $email, 'ip' => $ipAddress, 'success' => $success ? 1 : 0]);
+    }
+
+    public function authenticatePusher(array $postData = []): void
+    {
+        if (!isset($_SESSION['user_id']) || !isset($_SESSION['hotel_id'])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            exit;
+        }
+
+        $socketId = $postData['socket_id'] ?? '';
+        $channelName = $postData['channel_name'] ?? '';
+
+        // Ensure user can only subscribe to their own hotel's private channel
+        $expectedChannel = "private-hotel-" . $_SESSION['hotel_id'];
+        if ($channelName !== $expectedChannel && $_SESSION['role'] !== 'super_admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            exit;
+        }
+
+        $auth = \Syncro\Services\RealtimeBroadcaster::authorizeChannel($channelName, $socketId);
+        header('Content-Type: application/json');
+        echo $auth;
+        exit;
+    }
+
+    public function logout(): void
+    {
+        SessionManager::destroy();
+        global $basePath;
+        header("Location: " . ($basePath !== '' ? rtrim($basePath, '/') : '') . "/login");
+        exit();
     }
 }

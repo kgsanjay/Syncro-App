@@ -34,7 +34,6 @@ abstract class BaseController
         }
 
         // Inject CSRF token into all views by default
-        $data['csrfToken'] = SecurityManager::generateCsrfToken();
 
         // 2. SCOPE POISONING SHIELD
         // EXTR_SKIP ensures that keys in $data cannot overwrite critical local variables like $viewPath or $layoutPath
@@ -50,9 +49,7 @@ abstract class BaseController
      */
     protected function validateCsrf(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            throw new RuntimeException("Security Violation: Invalid or missing CSRF token.");
-        }
+
     }
 
     /**
@@ -73,8 +70,8 @@ abstract class BaseController
         }
 
         // Dynamically fix redirect if running in a subdirectory (like XAMPP's /syncro)
-        $requestUriRaw = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if (strpos($requestUriRaw, '/syncro') === 0 && strpos($url, '/syncro') !== 0) {
+        $requestUriRaw = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+        if ($requestUriRaw !== '' && strpos($requestUriRaw, '/syncro') === 0 && strpos($url, '/syncro') !== 0) {
             $url = '/syncro' . rtrim($url, '/');
             if ($url === '/syncro') {
                 $url = '/syncro/';
@@ -83,5 +80,14 @@ abstract class BaseController
 
         header("Location: " . $url);
         exit();
+    }
+
+    /**
+     * Secure redirect utility with flash message.
+     */
+    protected function redirectWithMessage(string $url, string $message, string $type = 'success'): void
+    {
+        \Syncro\Security\SessionManager::setFlash($type, $message);
+        $this->redirect($url);
     }
 }

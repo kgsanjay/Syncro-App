@@ -16,7 +16,7 @@ $displayError = $error ?? $_GET['error'] ?? SessionManager::getFlash('error') ??
 
     <div class="max-w-md w-full bg-[var(--white)] rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.12)] border border-[var(--border)] overflow-hidden relative z-10 transition-all hover:shadow-indigo-500/10 group">
         
-        <div class="bg-[var(--header)] p-12 text-center relative overflow-hidden group-hover:bg-[#0a0a0b] transition-colors">
+        <div class="bg-[var(--header)] p-12 text-center relative overflow-hidden group-hover:bg-[var(--header)] transition-colors">
             <div class="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-[var(--theme2)] rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
             <h1 class="text-4xl font-black tracking-tighter mb-4 relative z-10">
                 <span class="text-[var(--white)]">SYNCRO</span><span class="text-[var(--theme)]">.</span>
@@ -38,8 +38,8 @@ $displayError = $error ?? $_GET['error'] ?? SessionManager::getFlash('error') ??
                 </div>
             <?php endif; ?>
 
-            <form action="/login" method="POST" class="space-y-8 m-0">
-                <input type="hidden" name="csrf_token" value="<?= SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/login') ?>" method="POST" class="space-y-8 m-0">
+                <?= csrf_field() ?>">
 
                 <div class="space-y-3">
                     <label for="email" class="block text-[9px] font-black text-[var(--header)] uppercase tracking-[0.3em] opacity-40 ml-1">Universal Credential</label>

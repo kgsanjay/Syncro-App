@@ -14,17 +14,25 @@ class AuditLogger
     public static function log(int $hotelId, ?int $userId, string $actionType, string $description): void
     {
         try {
-            $db = Database::getConnection();
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             
-            $stmt = $db->prepare("
-                INSERT INTO audit_logs (hotel_id, user_id, action_type, description, ip_address)
-                VALUES (?, ?, ?, ?, ?)
-            ");
-            $stmt->execute([$hotelId, $userId, $actionType, $description, $ipAddress]);
+            $payload = json_encode([
+                'hotel_id' => $hotelId,
+                'user_id' => $userId,
+                'action_type' => $actionType,
+                'description' => $description,
+                'ip_address' => $ipAddress,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            if ($payload === false) {
+                return;
+            }
+
+            $logFile = __DIR__ . '/../../storage/logs/audit_queue.jsonl';
+            file_put_contents($logFile, $payload . PHP_EOL, FILE_APPEND | LOCK_EX);
         } catch (Exception $e) {
-            // Silently fail logging rather than breaking the application, 
-            // but in a real enterprise app this might log to a local file.
+            // Silently fail logging rather than breaking the application
             error_log("AuditLog Error: " . $e->getMessage());
         }
     }

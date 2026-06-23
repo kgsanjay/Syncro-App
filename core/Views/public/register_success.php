@@ -14,7 +14,7 @@
             <p class="text-sm text-[var(--text)] leading-relaxed">Our enterprise onboarding team will contact you shortly at your registered email address with instructions for offline payment and account activation.</p>
         </div>
         
-        <a href="/" class="inline-block w-full bg-[var(--header)] hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-4 rounded transition-colors uppercase tracking-widest text-xs shadow-sm">
+        <a href="<?= base_url('/') ?>" class="inline-block w-full bg-[var(--header)] hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-4 rounded transition-colors uppercase tracking-widest text-xs shadow-sm">
             Return to Homepage
         </a>
     </div>

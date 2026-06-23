@@ -1,53 +1,17 @@
-# ----------------------------------------------------------------------
-# 1. PREVENT ACCESS TO SENSITIVE FILES (CRITICAL)
-# ----------------------------------------------------------------------
-# Block access to dotfiles (.env, .git, .htaccess)
-<FilesMatch "^\.">
-    Require all denied
-</FilesMatch>
-
-# Block access to specific build and config files
-<FilesMatch "^(composer\.json|composer\.lock|package\.json)$">
-    Require all denied
-</FilesMatch>
-
-# ----------------------------------------------------------------------
-# 2. FRONT CONTROLLER ROUTING & DIRECTORY PROTECTION
-# ----------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On
-
-    # Block direct web access to backend directories
-    RewriteRule ^(vendor|core|cron|logs)($|/) - [F,L]
-
-    # Route all traffic to the Front Controller if it's not a real public file
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [QSA,L]
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
-# ----------------------------------------------------------------------
-# 3. ENTERPRISE SECURITY HEADERS
-# ----------------------------------------------------------------------
-<IfModule mod_headers.c>
-    # Enforce HTTPS
-    Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
-    
-    # Prevents Clickjacking (Blocks other sites from framing your SaaS)
-    Header always set X-Frame-Options "DENY"
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    
-    # Whitelisted Tailwind for secure UI and integrations
-    # Note: Using standard non-nonce based CSP for tailwind since the application does not yet have a centralized nonce manager.
-    Header always set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://img.shields.io; font-src 'self' data: https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; child-src 'self';"
-    
-    # Obscure Server Identity
-    Header always unset X-Powered-By
-    ServerSignature Off
-</IfModule>
+# Block access to sensitive files and directories
+<FilesMatch "^\.env">
+    Require all denied
+    Order allow,deny
+    Deny from all
+</FilesMatch>
 
-# Disable PageSpeed as it breaks TailwindCSS Standalone Script
-<IfModule pagespeed_module>
-    ModPagespeed off
-</IfModule>
+<DirectoryMatch "^core">
+    Require all denied
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>

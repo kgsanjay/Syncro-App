@@ -2,13 +2,13 @@
 
 <style>
     input[name="code"]::placeholder {
-        color: #cbd5e1;
+        color: var(--text);
         letter-spacing: 0.5em;
     }
 </style>
 
 <div class="mb-6 flex items-center justify-between">
-    <a href="/user/settings" class="text-[var(--text)] hover:text-[var(--theme2)] font-medium flex items-center transition-colors">
+    <a href="<?= base_url('/user/settings') ?>" class="text-[var(--text)] hover:text-[var(--theme2)] font-medium flex items-center transition-colors">
         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         Back to Settings
     </a>
@@ -30,8 +30,8 @@
             We have sent a 6-digit verification code to <strong><?= htmlspecialchars($email ?? 'your email address') ?></strong>. <br>Please enter it below to confirm your setup.
         </p>
 
-        <form action="/user/settings/2fa/verify" method="POST" class="space-y-6">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+        <form action="<?= base_url('/user/settings/2fa/verify') ?>" method="POST" class="space-y-6">
+            <?= csrf_field() ?>">
             
             <div class="max-w-xs mx-auto">
                 <input type="text" name="code" required autocomplete="off" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="• • • • • •"

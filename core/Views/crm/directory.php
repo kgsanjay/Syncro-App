@@ -8,14 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --theme: #1a365d;
-            --theme2: #2563eb;
-            --light: #f8fafc;
-            --white: #ffffff;
-            --text: #475569;
-            --header: #0f172a;
-            --border: #e2e8f0;
-            --success: #10b981;
+            --theme: var(--header);
+            --theme2: var(--theme2);
+            --light: var(--light);
+            --white: var(--white);
+            --text: var(--text);
+            --header: var(--header);
+            --border: var(--border);
+            --success: var(--success);
         }
     </style>
 </head>
@@ -27,7 +27,7 @@
             <h1 class="text-3xl font-extrabold text-[var(--header)] tracking-tight">Guest CRM</h1>
             <p class="text-sm text-[var(--text)] mt-1">Manage guest relationships, lifetime value, and marketing campaigns.</p>
         </div>
-        <a href="/user/dashboard" class="bg-gray-200 text-[var(--header)] font-bold py-2 px-4 rounded shadow hover:bg-gray-300">
+        <a href="<?= base_url('/user/dashboard') ?>" class="bg-gray-200 text-[var(--header)] font-bold py-2 px-4 rounded shadow hover:bg-gray-300">
             Back to Dashboard
         </a>
     </div>

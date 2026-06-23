@@ -9,19 +9,22 @@ use Syncro\Security\SessionManager;
 use Syncro\Security\SecurityManager;
 use Exception;
 
-class HousekeepingController extends BaseController
+class HousekeepingController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function dashboard(): void
     {
-        SessionManager::requireLogin();
-        // Allow hotel_admin or housekeeper
-        if ($_SESSION['role'] !== 'hotel_admin' && $_SESSION['role'] !== 'housekeeper') {
-            http_response_code(403);
-            die("Forbidden: Housekeeping access required.");
-        }
+        $this->requireRole(['hotel_admin', 'housekeeper']);
 
         $hotelId = $_SESSION['hotel_id'];
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         // Get all rooms for this hotel
         $stmt = $db->prepare("
@@ -55,19 +58,12 @@ class HousekeepingController extends BaseController
         ]);
     }
 
-    public function updateStatus(): void
+    public function updateStatus(array $postData = []): void
     {
-        SessionManager::requireLogin();
-        if ($_SESSION['role'] !== 'hotel_admin' && $_SESSION['role'] !== 'housekeeper') {
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => 'Forbidden']);
-            exit;
-        }
+        $this->requireRole(['hotel_admin', 'housekeeper']);
 
-        SecurityManager::verifyCsrfToken($_POST['csrf_token'] ?? '');
-
-        $roomId = (int)($_POST['room_id'] ?? 0);
-        $status = $_POST['status'] ?? '';
+        $roomId = (int)($postData['room_id'] ?? 0);
+        $status = $postData['status'] ?? '';
 
         $allowedStatuses = ['clean', 'dirty', 'cleaning', 'maintenance'];
         if (!in_array($status, $allowedStatuses)) {
@@ -77,7 +73,7 @@ class HousekeepingController extends BaseController
         }
 
         $hotelId = $_SESSION['hotel_id'];
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         try {
             $stmt = $db->prepare("UPDATE rooms SET housekeeping_status = ? WHERE id = ? AND hotel_id = ?");

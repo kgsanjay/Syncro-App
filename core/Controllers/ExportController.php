@@ -7,19 +7,22 @@ use Syncro\Models\Database;
 use Syncro\Security\SessionManager;
 use Exception;
 
-class ExportController extends BaseController
+class ExportController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function exportBookings(): void
     {
-        SessionManager::requireLogin();
-        // Only allow admins and managers to export
-        if ($_SESSION['role'] !== 'hotel_admin' && $_SESSION['role'] !== 'manager') {
-            http_response_code(403);
-            die("Forbidden: Export access required.");
-        }
+        $this->requireRole(['hotel_admin', 'manager']);
 
         $hotelId = $_SESSION['hotel_id'];
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         $stmt = $db->prepare("
             SELECT b.booking_reference, g.full_name as guest_name, g.email, 
@@ -61,14 +64,10 @@ class ExportController extends BaseController
 
     public function exportExpenses(): void
     {
-        SessionManager::requireLogin();
-        if ($_SESSION['role'] !== 'hotel_admin' && $_SESSION['role'] !== 'manager') {
-            http_response_code(403);
-            die("Forbidden: Export access required.");
-        }
+        $this->requireRole(['hotel_admin', 'manager']);
 
         $hotelId = $_SESSION['hotel_id'];
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         $stmt = $db->prepare("
             SELECT expense_date, category, amount, description, payment_method, reference_number

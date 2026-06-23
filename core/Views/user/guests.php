@@ -40,7 +40,7 @@
                                 <?= !empty($g['last_visit_date']) ? date('M j, Y', strtotime($g['last_visit_date'])) : 'Never' ?>
                             </td>
                             <td class="p-4 text-right">
-                                <a href="/user/guest-profile?id=<?= $g['id'] ?? 0 ?>" class="text-[var(--theme2)] hover:text-[var(--theme)] font-semibold text-sm transition-colors">
+                                <a href="<?= base_url() ?>/user/guest-profile?id=<?= $g['id'] ?? 0 ?>" class="text-[var(--theme2)] hover:text-[var(--theme)] font-semibold text-sm transition-colors">
                                     View Profile &rarr;
                                 </a>
                             </td>
@@ -59,8 +59,8 @@
             <button type="button" onclick="document.getElementById('addGuestModal').close()" class="text-[var(--text)] hover:text-[var(--danger)] text-2xl font-black leading-none outline-none cursor-pointer transition-colors">&times;</button>
         </div>
         
-        <form action="/user/guests" method="POST" class="m-0 space-y-5">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+        <form action="<?= base_url('/user/guests') ?>" method="POST" class="m-0 space-y-5">
+            <?= csrf_field() ?>">
             
             <div class="space-y-5 text-left">
                 <div>

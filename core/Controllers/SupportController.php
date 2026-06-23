@@ -11,10 +11,18 @@ use Exception;
 
 class SupportController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function index(): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->prepare("
             SELECT * FROM support_tickets 
@@ -33,7 +41,6 @@ class SupportController extends BaseHotelController
     public function create(array $postData): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($postData);
 
         $subject = strip_tags(trim($postData['subject'] ?? ''));
         $message = strip_tags(trim($postData['message'] ?? ''));
@@ -49,7 +56,7 @@ class SupportController extends BaseHotelController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction();
 
             $attachmentPath = $this->handleSecureImageUpload($_FILES['attachment'] ?? null);
@@ -92,7 +99,7 @@ class SupportController extends BaseHotelController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         // Verify ownership for security
         $stmt = $db->prepare("SELECT * FROM support_tickets WHERE id = :id AND hotel_id = :hid");
@@ -124,7 +131,6 @@ class SupportController extends BaseHotelController
     public function reply(array $postData): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($postData);
 
         $ticketId = (int)($postData['ticket_id'] ?? 0);
         $message = strip_tags(trim($postData['message'] ?? ''));
@@ -136,7 +142,7 @@ class SupportController extends BaseHotelController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             // Verify ownership
             $stmt = $db->prepare("SELECT id FROM support_tickets WHERE id = :id AND hotel_id = :hid");

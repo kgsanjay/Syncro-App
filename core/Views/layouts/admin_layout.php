@@ -14,19 +14,19 @@ $errorMsg   = SessionManager::getFlash('error');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken ?? '') ?>">
+    <?= csrf_meta() ?>">
     
     <title><?= SecurityManager::sanitizeOutput($pageTitle ?? 'Syncro Admin') ?></title>
-    <script src="/assets/js/tailwindcss.js?v=1.0"></script>
+    <script src="<?= base_url('/assets/js/tailwindcss.js?v=1.0') ?>"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/app.css?v=1.0">
+    <link rel="stylesheet" href="<?= base_url('/assets/css/app.css?v=1.0') ?>">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        theme: '#4f46e5', theme2: '#312e81', header: '#0f172a',
-                        text: '#475569', light: '#f8fafc', border: '#e2e8f0', white: '#ffffff',
+                        theme: 'var(--theme2)', theme2: 'var(--theme2)', header: 'var(--header)',
+                        text: 'var(--text)', light: 'var(--light)', border: 'var(--border)', white: 'var(--white)',
                     },
                     fontFamily: { 
                         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -65,23 +65,23 @@ $errorMsg   = SessionManager::getFlash('error');
         </div>
         
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <a href="/admin/dashboard" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= $uri === '/admin/dashboard' ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
+            <a href="<?= base_url('/admin/dashboard') ?>" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= $uri === '/admin/dashboard' ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
                 Dashboard
             </a>
-            <a href="/admin/hotels" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= str_starts_with($uri, '/admin/hotels') ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
+            <a href="<?= base_url('/admin/hotels') ?>" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= str_starts_with($uri, '/admin/hotels') ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
                 Client Hotels
             </a>
-            <a href="/admin/support" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= str_starts_with($uri, '/admin/support') ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
+            <a href="<?= base_url('/admin/support') ?>" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= str_starts_with($uri, '/admin/support') ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
                 Support Inbox
             </a>
-            <a href="/admin/settings" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= str_starts_with($uri, '/admin/settings') ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
+            <a href="<?= base_url('/admin/settings') ?>" class="flex items-center px-4 py-3 rounded-lg font-medium border-l-4 transition-all duration-200 <?= str_starts_with($uri, '/admin/settings') ? 'bg-[var(--white)]/10 text-[var(--white)] border-[var(--theme)]' : 'text-[var(--white)]/70 hover:bg-[var(--white)]/5 hover:text-[var(--white)] border-transparent hover:border-[var(--white)]/30' ?>">
                 Platform Settings
             </a>
         </nav>
         
         <div class="p-4 border-t border-[var(--white)]/10">
-            <form action="/logout" method="POST" class="m-0 p-0">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/logout') ?>" method="POST" class="m-0 p-0">
+                <?= csrf_field() ?>">
                 <button type="submit" class="w-full flex items-center px-4 py-3 text-[var(--theme)] hover:text-[var(--white)] hover:bg-[var(--white)]/5 rounded-lg font-medium transition-colors text-left">
                     Secure Logout
                 </button>

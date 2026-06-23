@@ -15,7 +15,7 @@
             Your booking (Folio <strong class="text-[var(--header)] font-black">#<?= str_pad((string)$bookingId, 5, '0', STR_PAD_LEFT) ?></strong>) is confirmed. An official receipt has been sent to your email.
         </p>
         
-        <a href="/book/<?= htmlspecialchars($slug) ?>" class="block w-full bg-[var(--theme2)] text-[var(--white)] font-extrabold py-4 px-6 rounded-lg uppercase tracking-widest text-xs hover:bg-[var(--header)] transition-colors shadow-md">
+        <a href="<?= base_url() ?>/book/<?= htmlspecialchars($slug) ?>" class="block w-full bg-[var(--theme2)] text-[var(--white)] font-extrabold py-4 px-6 rounded-lg uppercase tracking-widest text-xs hover:bg-[var(--header)] transition-colors shadow-md">
             Return to Property Page
         </a>
         

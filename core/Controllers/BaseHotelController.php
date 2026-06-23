@@ -9,11 +9,14 @@ use PDO;
 
 abstract class BaseHotelController extends BaseController
 {
+    private \Syncro\Models\Database $db;
+
     protected int $hotelId;
     protected int $userId;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
+        $this->db = $db;
         SessionManager::start();
         
         $allowedRoles = ['hotel_admin', 'receptionist', 'housekeeper'];
@@ -28,7 +31,7 @@ abstract class BaseHotelController extends BaseController
 
     private function initializeTenantContext(int $userId, string $role): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $activeHotelData = null;
         
         if ($role === 'hotel_admin') {
@@ -109,7 +112,7 @@ abstract class BaseHotelController extends BaseController
             $allowedPaths = ['/user/settings', '/logout', '/user/support'];
             $isAllowed = false;
             foreach ($allowedPaths as $path) {
-                if (strpos($currentUri, $path) === 0) {
+                if (strpos($currentUri, $path) !== false) {
                     $isAllowed = true;
                     break;
                 }
@@ -146,5 +149,45 @@ abstract class BaseHotelController extends BaseController
             $this->redirect('/user/dashboard');
             exit;
         }
+    }
+
+    /**
+     * Process an uploaded image file securely
+     */
+    protected function processImageUpload(?array $file): ?string
+    {
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            return null;
+        }
+
+        $uploadDir = realpath(__DIR__ . '/../../public/uploads/');
+        if ($uploadDir === false) {
+            // Create if not exist
+            mkdir(__DIR__ . '/../../public/uploads/', 0777, true);
+            $uploadDir = realpath(__DIR__ . '/../../public/uploads/');
+        }
+
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = uniqid('img_', true) . '.' . $extension;
+        $destination = $uploadDir . '/' . $filename;
+
+        if (move_uploaded_file($file['tmp_name'], $destination)) {
+            return '/syncro/public/uploads/' . $filename;
+        }
+
+        return null;
+    }
+
+    /**
+     * Override render to use 'user_layout' by default for hotel portal pages
+     */
+    protected function render(string $view, array $data = [], string $layout = 'user_layout'): void
+    {
+        parent::render($view, $data, $layout);
     }
 }

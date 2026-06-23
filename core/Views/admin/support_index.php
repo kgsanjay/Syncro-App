@@ -7,7 +7,7 @@
             <h1 class="text-3xl font-extrabold text-[var(--header)] tracking-tight">Support Inbox</h1>
             <p class="mt-1 text-sm text-[var(--text)] font-medium">Manage helpdesk tickets from all properties.</p>
         </div>
-        <a href="/admin/dashboard" class="bg-[var(--white)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--light)] font-bold px-4 py-2 rounded text-sm transition-colors shadow-sm">
+        <a href="<?= base_url('/admin/dashboard') ?>" class="bg-[var(--white)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--light)] font-bold px-4 py-2 rounded text-sm transition-colors shadow-sm">
             Back to Dashboard
         </a>
     </div>
@@ -17,7 +17,7 @@
             <div class="w-8 h-8 rounded-lg bg-[var(--success)]/10 text-[var(--success)] flex items-center justify-center mr-4">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]"><?= htmlspecialchars($successMsg) ?></p>
+            <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]"><?= e($successMsg) ?></p>
         </div>
     <?php endif; ?>
 
@@ -40,15 +40,15 @@
                         <tr class="hover:bg-[var(--light)]/50 transition-all group">
                             <td class="px-8 py-6 align-top">
                                 <div class="text-[15px] font-black text-[var(--header)] mb-1 tracking-tight">
-                                    <?= htmlspecialchars($t['property_name']) ?>
+                                    <?= e($t['property_name']) ?>
                                 </div>
                                 <div class="text-[11px] text-[var(--text)] font-black uppercase tracking-widest opacity-40">
-                                    Operator: <?= htmlspecialchars($t['user_name']) ?>
+                                    Operator: <?= e($t['user_name']) ?>
                                 </div>
                             </td>
                             <td class="px-8 py-6 align-top">
                                 <div class="text-[14px] font-black text-[var(--header)] mb-2 tracking-tight group-hover:text-[var(--theme2)] transition-colors">
-                                    <?= htmlspecialchars($t['subject']) ?>
+                                    <?= e($t['subject']) ?>
                                 </div>
                                 <div class="flex items-center gap-4 mt-3">
                                     <span class="text-[10px] font-black font-mono opacity-20 group-hover:opacity-100 transition-opacity">#<?= str_pad((string)$t['id'], 5, '0', STR_PAD_LEFT) ?></span>
@@ -60,7 +60,7 @@
                                         ];
                                         $pStyle = $priorityStyles[$t['priority'] ?? 'normal'] ?? $priorityStyles['normal'];
                                     ?>
-                                    <span class="px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.2em] rounded-md shadow-lg <?= $pStyle ?>">
+                                    <span class="px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.2em] rounded-md shadow-lg <?= e((string) $pStyle) ?>">
                                         <?= ucfirst($t['priority'] ?? 'Normal') ?>
                                     </span>
                                 </div>
@@ -79,13 +79,13 @@
                                     ];
                                     $s = $statusMaps[$t['status']] ?? $statusMaps['open'];
                                 ?>
-                                <span class="px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl border-2 shadow-sm flex items-center w-fit <?= $s['class'] ?> <?= $s['pulse'] ? 'animate-pulse' : '' ?>">
+                                <span class="px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl border-2 shadow-sm flex items-center w-fit <?= e((string) $s['class']) ?> <?= $s['pulse'] ? 'animate-pulse' : '' ?>">
                                     <div class="w-1.5 h-1.5 rounded-full bg-current mr-2"></div>
-                                    <?= $s['label'] ?>
+                                    <?= e((string) $s['label']) ?>
                                 </span>
                             </td>
                             <td class="px-8 py-6 text-right align-top">
-                                <a href="/admin/support/view?id=<?= $t['id'] ?>" class="inline-flex items-center px-6 py-2.5 bg-[var(--header)] text-[var(--white)] text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-[var(--theme2)] transition-all shadow-xl hover:-translate-y-0.5 active:scale-95">
+                                <a href="<?= base_url() ?>/admin/support/view?id=<?= e((string) $t['id']) ?>" class="inline-flex items-center px-6 py-2.5 bg-[var(--header)] text-[var(--white)] text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-[var(--theme2)] transition-all shadow-xl hover:-translate-y-0.5 active:scale-95">
                                     Dispatch &rarr;
                                 </a>
                             </td>

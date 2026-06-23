@@ -120,9 +120,43 @@ class OtaIntegrationService
 
         // Clear dashboard cache if new bookings were added so the receptionist sees them instantly
         if ($insertedCount > 0) {
-            CacheManager::clear('dashboard_metrics_hotel_' . $hotelId);
+            \Syncro\Services\CacheManager::clear('dashboard_metrics_hotel_' . $hotelId);
         }
 
         return $insertedCount;
+    }
+
+    /**
+     * Chunk inventory pushes into 5-day batches.
+     */
+    public static function pushInventoryChunked(\Syncro\Services\OTA\OtaChannelInterface $otaChannel, string $hotelId, string $otaRoomCode, array $inventoryList): bool
+    {
+        $chunks = array_chunk($inventoryList, 5);
+        $overallSuccess = true;
+
+        foreach ($chunks as $chunk) {
+            $success = $otaChannel->pushInventory($hotelId, $otaRoomCode, $chunk);
+            if (!$success) {
+                $overallSuccess = false;
+            }
+        }
+
+        return $overallSuccess;
+    }
+
+    /**
+     * Log API error and throw TemporarySyncException.
+     */
+    public static function handleApiError(int $hotelId, string $endpoint, string $payload, int $httpCode, string $errorMessage)
+    {
+        $db = Database::getConnection();
+        try {
+            $stmt = $db->prepare("INSERT INTO api_error_logs (hotel_id, endpoint, payload, response_code, error_message) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$hotelId, $endpoint, $payload, $httpCode, $errorMessage]);
+        } catch (Exception $e) {
+            error_log("Failed to log API error: " . $e->getMessage());
+        }
+
+        throw new \Syncro\Exceptions\TemporarySyncException("API Error ($httpCode): $errorMessage");
     }
 }

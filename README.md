@@ -33,7 +33,10 @@ Syncro is a comprehensive, multi-tenant Property Management System built with na
 
 2. **Database Setup:**
    Create a new MySQL database named `syncro`.
-   Run the migration scripts located in the `/migrations` folder in order, or use the CLI tool if available.
+   Initialize the database schema and seed data using the Phinx migration system:
+   ```bash
+   vendor/bin/phinx migrate
+   ```
 
 3. **Environment Configuration:**
    Copy `.env.example` to `.env` and fill in your database credentials and API keys.
