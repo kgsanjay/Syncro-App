@@ -13,8 +13,8 @@
                 <a href="#pricing" class="text-[var(--text)] hover:text-[var(--theme2)] text-sm font-bold uppercase tracking-wider transition-colors">Plans</a>
             </div>
             <div class="flex items-center space-x-5">
-                <a href="/login" class="text-[var(--text)] hover:text-[var(--header)] text-sm font-bold transition-colors">Login</a>
-                <a href="/register" class="bg-[var(--theme2)] text-[var(--white)] font-bold px-7 py-2.5 rounded hover:bg-[var(--header)] shadow-md transition-all text-xs uppercase tracking-widest">
+                <a href="<?= base_url('/login') ?>" class="text-[var(--text)] hover:text-[var(--header)] text-sm font-bold transition-colors">Login</a>
+                <a href="<?= base_url('/register') ?>" class="bg-[var(--theme2)] text-[var(--white)] font-bold px-7 py-2.5 rounded hover:bg-[var(--header)] shadow-md transition-all text-xs uppercase tracking-widest">
                     Start 14-Day Free Trial
                 </a>
             </div>
@@ -42,7 +42,7 @@
         </p>
         
         <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <a href="/register" class="w-full sm:w-auto bg-[var(--theme2)] text-[var(--white)] font-extrabold text-lg px-10 py-4 rounded shadow-lg hover:bg-[var(--header)] transition-all duration-300">
+            <a href="<?= base_url('/register') ?>" class="w-full sm:w-auto bg-[var(--theme2)] text-[var(--white)] font-extrabold text-lg px-10 py-4 rounded shadow-lg hover:bg-[var(--header)] transition-all duration-300">
                 Start 14-Day Free Trial
             </a>
             <a href="#pricing" class="w-full sm:w-auto bg-[var(--white)] border border-[var(--border)] text-[var(--header)] font-bold text-lg px-10 py-4 rounded hover:bg-[var(--light)] transition-all duration-300 shadow-sm">
@@ -59,7 +59,7 @@
                 <div class="w-3 h-3 rounded-full bg-[var(--border)]"></div>
                 <div class="w-3 h-3 rounded-full bg-[var(--border)]"></div>
             </div>
-            <img src="/assets/images/syncro-dashboard.png" alt="Syncro Dashboard Overview" class="w-full h-auto">
+            <img src="<?= base_url('/assets/images/syncro-dashboard.png') ?>" alt="Syncro Dashboard Overview" class="w-full h-auto">
         </div>
     </div>
 </section>
@@ -178,7 +178,7 @@
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-bold">✓</span> Unlimited Staff Accounts</li>
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-bold">✓</span> Helpdesk Support Ticket Access</li>
                 </ul>
-                <a href="/register" class="block w-full text-center bg-[var(--white)]/10 hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-3.5 rounded transition-colors uppercase tracking-widest text-xs">Select 1 Month</a>
+                <a href="<?= base_url('/register') ?>" class="block w-full text-center bg-[var(--white)]/10 hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-3.5 rounded transition-colors uppercase tracking-widest text-xs">Select 1 Month</a>
             </div>
 
             <div class="bg-[var(--white)]/5 rounded p-8 border border-[var(--white)]/10 flex flex-col hover:border-[var(--theme2)] transition-all duration-300 shadow-lg">
@@ -199,7 +199,7 @@
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-bold">✓</span> Unlimited Staff Accounts</li>
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-bold">✓</span> Helpdesk Support Ticket Access</li>
                 </ul>
-                <a href="/register" class="block w-full text-center bg-[var(--white)]/10 hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-3.5 rounded transition-colors uppercase tracking-widest text-xs">Select 3 Months</a>
+                <a href="<?= base_url('/register') ?>" class="block w-full text-center bg-[var(--white)]/10 hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-3.5 rounded transition-colors uppercase tracking-widest text-xs">Select 3 Months</a>
             </div>
 
             <div class="bg-[var(--white)]/5 rounded p-8 border border-[var(--white)]/10 flex flex-col hover:border-[var(--theme2)] transition-all duration-300 shadow-lg">
@@ -220,7 +220,7 @@
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-bold">✓</span> Unlimited Staff Accounts</li>
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-bold">✓</span> Priority Helpdesk Routing</li>
                 </ul>
-                <a href="/register" class="block w-full text-center bg-[var(--white)]/10 hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-3.5 rounded transition-colors uppercase tracking-widest text-xs">Select 6 Months</a>
+                <a href="<?= base_url('/register') ?>" class="block w-full text-center bg-[var(--white)]/10 hover:bg-[var(--theme2)] text-[var(--white)] font-bold py-3.5 rounded transition-colors uppercase tracking-widest text-xs">Select 6 Months</a>
             </div>
 
             <div class="bg-[var(--theme2)] rounded p-8 border-2 border-[var(--theme)] flex flex-col relative shadow-2xl scale-105 z-10">
@@ -242,7 +242,7 @@
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-black">✓</span> Unlimited Staff Accounts</li>
                     <li class="flex items-start"><span class="text-[var(--theme)] mr-3 font-black">✓</span> Priority Level 1 Support</li>
                 </ul>
-                <a href="/register" class="block w-full text-center bg-[var(--theme)] text-[var(--header)] font-extrabold py-4 rounded hover:bg-[var(--white)] shadow-md transition-all uppercase tracking-widest text-xs">Get 1 Year Plan</a>
+                <a href="<?= base_url('/register') ?>" class="block w-full text-center bg-[var(--theme)] text-[var(--header)] font-extrabold py-4 rounded hover:bg-[var(--white)] shadow-md transition-all uppercase tracking-widest text-xs">Get 1 Year Plan</a>
             </div>
 
         </div>
@@ -259,9 +259,9 @@
         </div>
         
         <div class="flex items-center space-x-8 text-sm">
-            <a href="/register" class="text-[var(--theme)] hover:text-[var(--white)] transition-colors font-bold tracking-wide">Start Free Trial</a>
+            <a href="<?= base_url('/register') ?>" class="text-[var(--theme)] hover:text-[var(--white)] transition-colors font-bold tracking-wide">Start Free Trial</a>
             <a href="mailto:sales@adhyancreatives.in" class="text-[var(--white)]/70 hover:text-[var(--white)] transition-colors font-semibold tracking-wide">Contact Sales</a>
-            <a href="/login" class="text-[var(--white)]/70 hover:text-[var(--white)] transition-colors font-semibold tracking-wide">Client Login</a>
+            <a href="<?= base_url('/login') ?>" class="text-[var(--white)]/70 hover:text-[var(--white)] transition-colors font-semibold tracking-wide">Client Login</a>
         </div>
     </div>
     
@@ -271,9 +271,9 @@
         </p>
 
         <div class="flex flex-wrap justify-center gap-6 text-[var(--white)]/50 text-xs uppercase tracking-widest font-bold">
-            <a href="/terms" class="hover:text-[var(--theme)] transition-colors">Terms of Use</a>
-            <a href="/privacy" class="hover:text-[var(--theme)] transition-colors">Privacy Policy</a>
-            <a href="/refund" class="hover:text-[var(--theme)] transition-colors">Shipping & Refunds</a>
+            <a href="<?= base_url('/terms') ?>" class="hover:text-[var(--theme)] transition-colors">Terms of Use</a>
+            <a href="<?= base_url('/privacy') ?>" class="hover:text-[var(--theme)] transition-colors">Privacy Policy</a>
+            <a href="<?= base_url('/refund') ?>" class="hover:text-[var(--theme)] transition-colors">Shipping & Refunds</a>
         </div>
 
         <div class="mt-2 md:mt-0">

@@ -11,7 +11,7 @@
                 </h2>
                 <p class="text-[var(--light)] text-sm font-medium opacity-80">Your payment was successful and your Enterprise License is now active. Let's get your property online.</p>
             </div>
-            <a href="/user/rooms" class="relative z-10 bg-[var(--theme)] text-[var(--header)] font-extrabold px-6 py-3 rounded shadow hover:bg-[var(--white)] hover:shadow-lg transition-all text-sm whitespace-nowrap uppercase tracking-wider">
+            <a href="<?= base_url('/user/rooms') ?>" class="relative z-10 bg-[var(--theme)] text-[var(--header)] font-extrabold px-6 py-3 rounded shadow hover:bg-[var(--white)] hover:shadow-lg transition-all text-sm whitespace-nowrap uppercase tracking-wider">
                 Set up your first room
             </a>
         </div>
@@ -90,7 +90,7 @@
                         </h3>
                     </div>
                     <div class="p-6 flex justify-center">
-                        <canvas id="sourceChart" height="120" style="max-height: 200px;"></canvas>
+                        <canvas id="sourceChart" height="120" class="max-h-[200px]"></canvas>
                     </div>
                 </div>
             </div>
@@ -103,11 +103,11 @@
                         Front Desk: Today's Arrivals
                     </h3>
                     <div class="flex gap-2">
-                        <a href="/export/bookings" class="text-[11px] text-[var(--text)] font-bold uppercase tracking-widest hover:text-[var(--header)] transition-colors bg-[var(--white)] px-3 py-1.5 rounded border border-[var(--border)] inline-flex items-center">
+                        <a href="<?= base_url('/export/bookings') ?>" class="text-[11px] text-[var(--text)] font-bold uppercase tracking-widest hover:text-[var(--header)] transition-colors bg-[var(--white)] px-3 py-1.5 rounded border border-[var(--border)] inline-flex items-center">
                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Export CSV
                         </a>
-                        <a href="/user/bookings?status=confirmed" class="text-[11px] text-[var(--theme2)] font-bold uppercase tracking-widest hover:text-[var(--header)] transition-colors bg-[var(--white)] px-3 py-1.5 rounded border border-[var(--border)]">View Master Ledger &rarr;</a>
+                        <a href="<?= base_url('/user/bookings?status=confirmed') ?>" class="text-[11px] text-[var(--theme2)] font-bold uppercase tracking-widest hover:text-[var(--header)] transition-colors bg-[var(--white)] px-3 py-1.5 rounded border border-[var(--border)]">View Master Ledger &rarr;</a>
                     </div>
                 </div>
                 
@@ -127,7 +127,7 @@
                                 <?php foreach($arrivalList as $arrival): ?>
                                 <tr class="hover:bg-[var(--light)] transition-colors group">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="/user/invoice?id=<?= $arrival['id'] ?>" class="text-sm font-bold text-[var(--header)] group-hover:text-[var(--theme2)] transition-colors flex items-center">
+                                        <a href="<?= base_url() ?>/user/invoice?id=<?= $arrival['id'] ?>" class="text-sm font-bold text-[var(--header)] group-hover:text-[var(--theme2)] transition-colors flex items-center">
                                             <?= htmlspecialchars((string)$arrival['guest_name']) ?>
                                             <svg class="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                         </a>
@@ -174,7 +174,7 @@
                                 <?php foreach($departureList as $departure): ?>
                                 <tr class="hover:bg-[var(--light)] transition-colors group">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="/user/invoice?id=<?= $departure['id'] ?>" class="text-sm font-bold text-[var(--header)] group-hover:text-[var(--theme2)] transition-colors flex items-center">
+                                        <a href="<?= base_url() ?>/user/invoice?id=<?= $departure['id'] ?>" class="text-sm font-bold text-[var(--header)] group-hover:text-[var(--theme2)] transition-colors flex items-center">
                                             <?= htmlspecialchars((string)$departure['guest_name']) ?>
                                             <svg class="w-3 h-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                         </a>
@@ -199,7 +199,7 @@
         </div>
 
         <div class="lg:col-span-1 space-y-4">
-            <a href="/user/calendar" class="block bg-[var(--theme2)] rounded shadow-sm border border-[var(--header)] p-6 text-[var(--white)] hover:shadow-md transition-all relative overflow-hidden group">
+            <a href="<?= base_url('/user/calendar') ?>" class="block bg-[var(--theme2)] rounded shadow-sm border border-[var(--header)] p-6 text-[var(--white)] hover:shadow-md transition-all relative overflow-hidden group">
                 <div class="absolute right-0 top-0 -mr-4 -mt-4 w-24 h-24 bg-[var(--white)] opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                 <h3 class="text-lg font-bold mb-1 flex items-center relative z-10">
                     <svg class="w-5 h-5 mr-2 text-[var(--theme)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -212,7 +212,7 @@
             </a>
 
             <div class="grid grid-cols-1 gap-4">
-                <a href="/user/rates" class="flex items-center bg-[var(--white)] rounded shadow-sm border border-[var(--border)] p-5 hover:border-[var(--theme2)] hover:shadow-md transition-all group">
+                <a href="<?= base_url('/user/rates') ?>" class="flex items-center bg-[var(--white)] rounded shadow-sm border border-[var(--border)] p-5 hover:border-[var(--theme2)] hover:shadow-md transition-all group">
                     <div class="w-10 h-10 rounded bg-[var(--light)] flex items-center justify-center text-[var(--theme2)] mr-4 group-hover:bg-[var(--theme2)] group-hover:text-[var(--white)] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
@@ -222,7 +222,7 @@
                     </div>
                 </a>
 
-                <a href="/housekeeping/dashboard" class="flex items-center bg-[var(--white)] rounded shadow-sm border border-[var(--border)] p-5 hover:border-[var(--theme2)] hover:shadow-md transition-all group lg:hover:-translate-y-1 duration-300">
+                <a href="<?= base_url('/housekeeping/dashboard') ?>" class="flex items-center bg-[var(--white)] rounded shadow-sm border border-[var(--border)] p-5 hover:border-[var(--theme2)] hover:shadow-md transition-all group lg:hover:-translate-y-1 duration-300">
                     <div class="w-10 h-10 rounded bg-[var(--light)] flex items-center justify-center text-[var(--text)] mr-4 group-hover:bg-[var(--header)] group-hover:text-[var(--white)] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     </div>
@@ -232,7 +232,7 @@
                     </div>
                 </a>
 
-                <a href="/crm/directory" class="flex items-center bg-[var(--white)] rounded shadow-sm border border-[var(--border)] p-5 hover:border-[var(--theme2)] hover:shadow-md transition-all group lg:hover:-translate-y-1 duration-300">
+                <a href="<?= base_url('/crm/directory') ?>" class="flex items-center bg-[var(--white)] rounded shadow-sm border border-[var(--border)] p-5 hover:border-[var(--theme2)] hover:shadow-md transition-all group lg:hover:-translate-y-1 duration-300">
                     <div class="w-10 h-10 rounded bg-[var(--light)] flex items-center justify-center text-[var(--text)] mr-4 group-hover:bg-[var(--header)] group-hover:text-[var(--white)] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
@@ -259,7 +259,7 @@
                     <?php if (empty($otaMappings)): ?>
                         <div class="text-center py-4">
                             <p class="text-[11px] text-[var(--text)] font-medium italic">No active channel mappings found.</p>
-                            <a href="/user/channel-manager" class="mt-2 inline-block text-[10px] font-bold text-[var(--theme2)] uppercase border-b border-dotted border-[var(--theme2)]">Configure OTAs</a>
+                            <a href="<?= base_url('/user/channel-manager') ?>" class="mt-2 inline-block text-[10px] font-bold text-[var(--theme2)] uppercase border-b border-dotted border-[var(--theme2)]">Configure OTAs</a>
                         </div>
                     <?php else: ?>
                         <?php foreach (array_slice($otaMappings, 0, 4) as $mapping): ?>
@@ -282,7 +282,7 @@
                         <?php endforeach; ?>
                         
                         <?php if (count($otaMappings) > 4): ?>
-                            <a href="/user/channel-manager" class="block text-center pt-2 text-[10px] font-bold text-[var(--theme2)] uppercase tracking-widest opacity-70 hover:opacity-100 transition-opacity">
+                            <a href="<?= base_url('/user/channel-manager') ?>" class="block text-center pt-2 text-[10px] font-bold text-[var(--theme2)] uppercase tracking-widest opacity-70 hover:opacity-100 transition-opacity">
                                 + <?= count($otaMappings) - 4 ?> More Channels
                             </a>
                         <?php endif; ?>
@@ -305,7 +305,7 @@
                     datasets: [{
                         label: 'Revenue (₹)',
                         data: <?= json_encode($chartRevenue ?? []) ?>,
-                        borderColor: '#003366',
+                        borderColor: 'var(--header)',
                         backgroundColor: 'rgba(0, 51, 102, 0.1)',
                         borderWidth: 2,
                         fill: true,
@@ -343,7 +343,7 @@
                                 labels: sources.map(s => s.source.toUpperCase()),
                                 datasets: [{
                                     data: sources.map(s => s.revenue),
-                                    backgroundColor: ['#002244', '#00A859', '#F2994A', '#2D9CDB', '#9B51E0'],
+                                    backgroundColor: ['var(--header)', 'var(--success)', 'var(--theme)', 'var(--theme2)', 'var(--theme2)'],
                                     borderWidth: 0
                                 }]
                             },

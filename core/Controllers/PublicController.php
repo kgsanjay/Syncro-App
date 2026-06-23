@@ -10,6 +10,13 @@ use Exception;
 
 class PublicController extends BaseController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+    }
+
     public function home(): void
     {
         $this->render('public/home', [
@@ -19,7 +26,7 @@ class PublicController extends BaseController
 
     public function viewHotelPage(string $slug): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         // 1. FETCH HOTEL PROFILE
         $stmt = $db->prepare("
@@ -46,13 +53,33 @@ class PublicController extends BaseController
         // Pass any error messages from a failed booking attempt back to the view
         $error = $_GET['error'] ?? null;
 
+        // Fetch user data if authenticated
+        $loggedInUser = null;
+        if (isset($_SESSION['guest_id'])) {
+            $stmtGuest = $db->prepare("SELECT full_name, email FROM guests WHERE id = :id LIMIT 1");
+            $stmtGuest->execute(['id' => $_SESSION['guest_id']]);
+            $guest = $stmtGuest->fetch();
+            if ($guest) {
+                $loggedInUser = [
+                    'name' => $guest['full_name'],
+                    'email' => $guest['email']
+                ];
+            }
+        } elseif (isset($_SESSION['verified_email'])) {
+            $loggedInUser = [
+                'name' => $_SESSION['verified_name'] ?? '',
+                'email' => $_SESSION['verified_email']
+            ];
+        }
+
         $this->render('public/booking_page', [
             'pageTitle' => 'Book Direct | ' . $hotel['property_name'],
             'hotel'     => $hotel,
             'rooms'     => $rooms,
             'slug'      => $slug,
             'success'   => $_GET['success'] ?? false,
-            'error'     => $error
+            'error'     => $error,
+            'loggedInUser' => $loggedInUser
         ], 'blank_layout');
     }
 
@@ -67,7 +94,7 @@ class PublicController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("
             SELECT discount_type, discount_value 
             FROM promo_codes 
@@ -92,7 +119,7 @@ class PublicController extends BaseController
 
     public function processBooking(string $slug, array $postData): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->prepare("SELECT * FROM hotels WHERE slug = :slug AND status = 'active' LIMIT 1");
         $stmt->execute(['slug' => $slug]);
@@ -164,7 +191,7 @@ class PublicController extends BaseController
 
             // 2. Hand off to PhonePe redirect IF a payment is required and keys exist
             if ($calculatedTotal > 0 && !empty($merchantId) && !empty($saltKey)) {
-                (new \Syncro\Controllers\CheckoutController())->init(['booking_id' => $bookingId]);
+                (new \Syncro\Controllers\CheckoutController($this->db))->init(['booking_id' => $bookingId]);
                 return; // Stop execution here so the redirect processes correctly
             }
 

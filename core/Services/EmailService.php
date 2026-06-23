@@ -5,45 +5,17 @@ namespace Syncro\Services;
 
 class EmailService
 {
-    private static function getApiKey(): string
-    {
-        return $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?: ''; 
-    }
-
-    private static function getSenderEmail(): string
-    {
-        return $_ENV['MAIL_FROM_ADDRESS'] ?? getenv('MAIL_FROM_ADDRESS') ?: 'reservations@adhyancreatives.in';
-    }
-
-    private static function getSenderName(): string
-    {
-        return $_ENV['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: 'Syncro Hospitality';
-    }
-
     /**
      * Sends a generic transactional email (Used for 2FA OTPs, Password Resets, etc.)
      */
     public static function sendTransactionalEmail(string $toEmail, string $subject, string $htmlContent): bool
     {
-        $apiKey = self::getApiKey();
-        $senderEmail = self::getSenderEmail();
-        $senderName = self::getSenderName();
-
-        if (empty($apiKey)) {
-            $headers  = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-            $headers .= "From: {$senderName} <{$senderEmail}>\r\n";
-            return @mail($toEmail, $subject, $htmlContent, $headers);
-        }
-
-        $data = [
-            'sender'      => ['name' => $senderName, 'email' => $senderEmail],
-            'to'          => [['email' => $toEmail]],
-            'subject'     => $subject,
+        $queue = new DatabaseQueue();
+        return $queue->push(\Syncro\Jobs\EmailJob::class, [
+            'toEmail' => $toEmail,
+            'subject' => $subject,
             'htmlContent' => $htmlContent
-        ];
-
-        return self::executeBrevoApi($apiKey, $data);
+        ]);
     }
 
     /**
@@ -51,14 +23,6 @@ class EmailService
      */
     public static function sendBookingConfirmation(string $toEmail, string $guestName, string $hotelName, string $checkIn, string $checkOut, int $bookingId): bool
     {
-        $apiKey = self::getApiKey();
-        $senderEmail = self::getSenderEmail();
-        $senderName = self::getSenderName();
-
-        if (empty($apiKey)) {
-            return self::fallbackBasicMail($toEmail, $guestName, $hotelName, $checkIn, $checkOut, $bookingId, $senderEmail);
-        }
-
         // FIX: Neutralize HTML/XSS injection vectors from user input
         $safeGuestName = htmlspecialchars($guestName, ENT_QUOTES, 'UTF-8');
         $safeHotelName = htmlspecialchars($hotelName, ENT_QUOTES, 'UTF-8');
@@ -100,70 +64,21 @@ class EmailService
             </div>
         ";
 
-        $data = [
-            'sender' => ['name' => $senderName, 'email' => $senderEmail],
-            'to' => [['email' => $toEmail, 'name' => $guestName]],
+        // Plaintext fallback for basic mail
+        $textContent = "Dear {$guestName},\n\n";
+        $textContent .= "Your stay at {$hotelName} is confirmed.\n\n";
+        $textContent .= "Folio ID: #" . str_pad((string)$bookingId, 5, '0', STR_PAD_LEFT) . "\n";
+        $textContent .= "Check-in: {$checkIn}\n";
+        $textContent .= "Check-out: {$checkOut}\n\n";
+        $textContent .= "Thank you,\nSyncro Hospitality";
+
+        $queue = new DatabaseQueue();
+        return $queue->push(\Syncro\Jobs\EmailJob::class, [
+            'toEmail' => $toEmail,
+            'toName' => $guestName,
             'subject' => "Your Reservation at {$safeHotelName} is Confirmed",
-            'htmlContent' => $htmlContent
-        ];
-
-        $success = self::executeBrevoApi($apiKey, $data);
-
-        if (!$success) {
-            return self::fallbackBasicMail($toEmail, $guestName, $hotelName, $checkIn, $checkOut, $bookingId, $senderEmail);
-        }
-
-        return true;
-    }
-
-    /**
-     * Private helper to execute the cURL request to Brevo API
-     */
-    private static function executeBrevoApi(string $apiKey, array $data): bool
-    {
-        $ch = curl_init('https://api.brevo.com/v3/smtp/email');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'accept: application/json',
-            'api-key: ' . $apiKey,
-            'content-type: application/json'
+            'htmlContent' => $htmlContent,
+            'textContent' => $textContent
         ]);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode === 201 || $httpCode === 200) {
-            return true;
-        }
-
-        error_log("Email API Error: " . $response);
-        return false;
-    }
-
-    /**
-     * Plaintext fallback for Booking Confirmations if the API fails or is missing
-     */
-    private static function fallbackBasicMail(string $toEmail, string $guestName, string $hotelName, string $checkIn, string $checkOut, int $bookingId, string $senderEmail): bool
-    {
-        // FIX: CRLF Injection Shield. Strip newlines to prevent Email Header Injection.
-        $safeSenderEmail = str_replace(["\r", "\n"], '', $senderEmail);
-        
-        $subject = "Reservation Confirmed - " . str_replace(["\r", "\n"], '', $hotelName);
-        
-        $message = "Dear {$guestName},\n\n";
-        $message .= "Your stay at {$hotelName} is confirmed.\n\n";
-        $message .= "Folio ID: #" . str_pad((string)$bookingId, 5, '0', STR_PAD_LEFT) . "\n";
-        $message .= "Check-in: {$checkIn}\n";
-        $message .= "Check-out: {$checkOut}\n\n";
-        $message .= "Thank you,\nSyncro Hospitality";
-
-        $headers = "From: " . $safeSenderEmail . "\r\n";
-        $headers .= "Reply-To: " . $safeSenderEmail . "\r\n";
-        $headers .= "X-Mailer: PHP/" . phpversion();
-
-        return @mail($toEmail, $subject, $message, $headers);
     }
 }

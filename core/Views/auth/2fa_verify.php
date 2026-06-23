@@ -2,7 +2,7 @@
 
 <style>
     input[name="code"]::placeholder {
-        color: #cbd5e1;
+        color: var(--text);
         letter-spacing: 0.5em;
     }
 </style>
@@ -23,8 +23,8 @@
     </div>
 <?php endif; ?>
 
-<form action="/login/2fa" method="POST" class="space-y-6">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+<form action="<?= base_url('/login/2fa') ?>" method="POST" class="space-y-6">
+    <?= csrf_field() ?>">
     
     <div>
         <label for="code" class="sr-only">6-Digit Code</label>
@@ -44,6 +44,6 @@
 
 <div class="mt-6 text-center">
     <p class="text-xs text-[var(--text)]">
-        Didn't receive the code? <a href="/login" class="font-bold text-[var(--theme2)] hover:text-[var(--theme)] transition-colors">Go back and try again</a>.
+        Didn't receive the code? <a href="<?= base_url('/login') ?>" class="font-bold text-[var(--theme2)] hover:text-[var(--theme)] transition-colors">Go back and try again</a>.
     </p>
 </div>

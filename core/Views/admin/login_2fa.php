@@ -22,7 +22,7 @@ $displayError = $error ?? \Syncro\Security\SessionManager::getFlash('error');
 
     <div class="max-w-md w-full bg-[var(--white)] rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.12)] border border-[var(--border)] overflow-hidden relative z-10 transition-all hover:shadow-indigo-500/10 group">
         
-        <div class="bg-[var(--header)] p-12 text-center relative overflow-hidden group-hover:bg-[#0a0a0b] transition-colors">
+        <div class="bg-[var(--header)] p-12 text-center relative overflow-hidden group-hover:bg-[var(--header)] transition-colors">
             <div class="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-[var(--theme2)] rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
             <h1 class="text-4xl font-black tracking-tighter mb-4 relative z-10">
                 <span class="text-[var(--white)]">SYNCRO</span><span class="text-[var(--theme)]">.</span>
@@ -50,12 +50,12 @@ $displayError = $error ?? \Syncro\Security\SessionManager::getFlash('error');
                     <div class="w-8 h-8 rounded-lg bg-[var(--danger)]/10 text-[var(--danger)] flex items-center justify-center mr-4">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]"><?= htmlspecialchars($displayError) ?></p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]"><?= e($displayError) ?></p>
                 </div>
             <?php endif; ?>
 
-            <form action="/login/2fa" method="POST" class="space-y-8 m-0">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/login/2fa') ?>" method="POST" class="space-y-8 m-0">
+                <?= csrf_field() ?>">
                 
                 <div class="relative group/otp">
                     <label for="code" class="sr-only">Signature Fragment</label>
@@ -74,7 +74,7 @@ $displayError = $error ?? \Syncro\Security\SessionManager::getFlash('error');
             <div class="mt-12 text-center">
                 <p class="text-[9px] text-[var(--text)] font-black uppercase tracking-[0.2em] opacity-40">
                     Transmission latency detected? <br>
-                    <a href="/login" class="inline-block mt-4 text-[var(--theme2)] hover:text-[var(--header)] transition-colors underline decoration-2 underline-offset-8 decoration-[var(--theme2)]/30 hover:decoration-[var(--theme2)]">Request New Dispatches</a>.
+                    <a href="<?= base_url('/login') ?>" class="inline-block mt-4 text-[var(--theme2)] hover:text-[var(--header)] transition-colors underline decoration-2 underline-offset-8 decoration-[var(--theme2)]/30 hover:decoration-[var(--theme2)]">Request New Dispatches</a>.
                 </p>
             </div>
             

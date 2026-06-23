@@ -7,7 +7,7 @@
     </div>
     
     <div class="flex flex-col sm:flex-row items-center gap-3">
-        <form method="GET" action="/user/reports" class="flex items-center gap-3 bg-[var(--white)] p-2 rounded-lg border border-[var(--border)] shadow-sm">
+        <form method="GET" action="<?= base_url('/user/reports') ?>" class="flex items-center gap-3 bg-[var(--white)] p-2 rounded-lg border border-[var(--border)] shadow-sm">
             <input type="date" name="date" value="<?= htmlspecialchars($targetDate) ?>" class="p-2 border border-[var(--border)] rounded focus:outline-none focus:border-[var(--theme)] text-sm text-[var(--text)] bg-[var(--light)]">
             
             <select name="month" class="p-2 border border-[var(--border)] rounded focus:outline-none focus:border-[var(--theme)] text-sm text-[var(--text)] bg-[var(--light)]">
@@ -27,7 +27,7 @@
             </button>
         </form>
 
-        <a href="/user/reports?date=<?= htmlspecialchars($targetDate) ?>&month=<?= $month ?>&year=<?= $year ?>&export=csv" 
+        <a href="<?= base_url() ?>/user/reports?date=<?= htmlspecialchars($targetDate) ?>&month=<?= $month ?>&year=<?= $year ?>&export=csv" 
            class="inline-flex items-center justify-center px-6 py-3.5 bg-[var(--header)] text-[var(--theme)] text-xs font-black rounded-xl hover:bg-[var(--theme2)] hover:text-[var(--white)] transition-all shadow-xl whitespace-nowrap w-full sm:w-auto uppercase tracking-widest border border-[var(--theme)]/20 hover:-translate-y-1 active:scale-95">
             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>

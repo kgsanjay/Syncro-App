@@ -20,8 +20,8 @@
                         <p class="text-sm text-[var(--text)] mb-3"><?= nl2br(\Syncro\Security\SecurityManager::sanitizeOutput($ticket['issue_description'])) ?></p>
                         <div class="flex justify-between items-center text-xs text-[var(--text)]/80">
                             <span>Reported by: <?= \Syncro\Security\SecurityManager::sanitizeOutput($ticket['reporter_name'] ?? 'System') ?></span>
-                            <form method="POST" action="/user/housekeeping/ticket/resolve" class="inline">
-                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <form method="POST" action="<?= base_url('/user/housekeeping/ticket/resolve') ?>" class="inline">
+                                <?= csrf_field() ?>">
                                 <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
                                 <button type="submit" class="text-[var(--success)] font-bold hover:underline">Mark Resolved</button>
                             </form>
@@ -72,8 +72,8 @@
                         </span>
                         
                         <?php if($_SESSION['role'] === 'hotel_admin'): ?>
-                            <form method="POST" action="/user/housekeeping/assign" class="mt-4">
-                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <form method="POST" action="<?= base_url('/user/housekeeping/assign') ?>" class="mt-4">
+                                <?= csrf_field() ?>">
                                 <input type="hidden" name="room_id" value="<?= $room['id'] ?>">
                                 <select name="staff_id" onchange="this.form.submit()" class="w-full bg-[var(--light)] border border-[var(--border)] text-[var(--text)] text-xs rounded px-1 py-1 outline-none">
                                     <option value="">Unassigned</option>
@@ -113,7 +113,7 @@
         const formData = new FormData();
         formData.append('room_id', roomId);
         formData.append('status', newStatus);
-        formData.append('csrf_token', csrfToken);
+        formData.append('_csrf', csrfToken);
 
         try {
             const response = await fetch('/ajax/housekeeping/update', {
@@ -165,7 +165,7 @@
             
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
-            csrfInput.name = 'csrf_token';
+            csrfInput.name = '_csrf';
             csrfInput.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             
             const roomInput = document.createElement('input');

@@ -3,7 +3,7 @@
 <div class="max-w-[1000px] mx-auto pb-10">
 
     <div class="mb-8">
-        <a href="/user/support" class="text-[var(--text)] hover:text-[var(--theme2)] font-black text-[10px] uppercase tracking-[0.2em] flex items-center mb-6 w-fit transition-all bg-[var(--light)] px-4 py-2 rounded-xl border border-[var(--border)] hover:bg-[var(--white)] hover:-translate-y-1 active:scale-95 shadow-sm">
+        <a href="<?= base_url('/user/support') ?>" class="text-[var(--text)] hover:text-[var(--theme2)] font-black text-[10px] uppercase tracking-[0.2em] flex items-center mb-6 w-fit transition-all bg-[var(--light)] px-4 py-2 rounded-xl border border-[var(--border)] hover:bg-[var(--white)] hover:-translate-y-1 active:scale-95 shadow-sm">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Return to Desk
         </a>
@@ -88,8 +88,8 @@
                     Operational Flow Concluded &bull; Ticket Locked
                 </div>
             <?php else: ?>
-                <form action="/user/support/view" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/user/support/view') ?>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+                    <?= csrf_field() ?>">
                     <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
                     
                     <div id="imagePreviewContainer" class="hidden relative w-fit mb-2 group">

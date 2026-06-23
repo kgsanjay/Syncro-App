@@ -8,19 +8,22 @@ use Syncro\Security\SessionManager;
 use Syncro\Security\SecurityManager;
 use Exception;
 
-class CRMController extends BaseController
+class CRMController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function directory(): void
     {
-        SessionManager::requireLogin();
-        // Allow hotel_admin or receptionist
-        if ($_SESSION['role'] !== 'hotel_admin' && $_SESSION['role'] !== 'receptionist') {
-            http_response_code(403);
-            die("Forbidden: CRM access requires admin or front desk role.");
-        }
+        $this->requireRole(['hotel_admin', 'receptionist']);
 
         $hotelId = $_SESSION['hotel_id'];
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         // Get all guests for this hotel ordered by lifetime value
         $stmt = $db->prepare("

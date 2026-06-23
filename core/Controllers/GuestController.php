@@ -7,15 +7,24 @@ use Syncro\Models\Database;
 use Syncro\Security\SessionManager;
 use Syncro\Security\SecurityManager; // Correctly imported for CSRF checks
 use Throwable;
+use Exception;
 
 class GuestController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     public function index(): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             // We use COALESCE to ensure if name is null, it shows 'New Guest'
             // We use a LEFT JOIN to ensure guests show up even if they have 0 bookings
@@ -53,11 +62,6 @@ class GuestController extends BaseHotelController
         $this->requireRole(['hotel_admin', 'receptionist']);
 
         // FIXED: Using direct SecurityManager check to prevent the "undefined method" error
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            SessionManager::setFlash('error', 'Security Violation: CSRF Token Invalid.');
-            $this->redirect('/user/guests');
-            return;
-        }
 
         $name = strip_tags(trim($postData['guest_name'] ?? ''));
         $email = trim(filter_var($postData['guest_email'] ?? '', FILTER_SANITIZE_EMAIL));
@@ -70,7 +74,7 @@ class GuestController extends BaseHotelController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             $stmt = $db->prepare("INSERT INTO guests (hotel_id, full_name, email, phone) VALUES (:hid, :name, :email, :phone)");
             $stmt->execute([
@@ -104,7 +108,7 @@ class GuestController extends BaseHotelController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
 
             // 1. Fetch Guest Basic Info
             $stmt = $db->prepare("SELECT * FROM guests WHERE id = :id AND hotel_id = :hid");

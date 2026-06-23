@@ -8,16 +8,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --theme: #1a365d;
-            --theme2: #2563eb;
-            --light: #f8fafc;
-            --white: #ffffff;
-            --text: #475569;
-            --header: #0f172a;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --theme: var(--header);
+            --theme2: var(--theme2);
+            --light: var(--light);
+            --white: var(--white);
+            --text: var(--text);
+            --header: var(--header);
+            --border: var(--border);
+            --success: var(--success);
+            --danger: var(--danger);
+            --warning: var(--theme);
         }
         body { -webkit-tap-highlight-color: transparent; }
     </style>
@@ -87,7 +87,7 @@
 </div>
 
 <form id="statusForm" class="hidden">
-    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
+    <?= csrf_field() ?>">
     <input type="hidden" name="room_id" id="form_room_id">
     <input type="hidden" name="status" id="form_status">
 </form>

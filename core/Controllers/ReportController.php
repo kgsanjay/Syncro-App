@@ -10,11 +10,14 @@ use Throwable;
 
 class ReportController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
     private ReportService $reportService;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
-        parent::__construct();
+        $this->db = $db;
+        parent::__construct($db);
         $this->reportService = new ReportService();
     }
 
@@ -49,7 +52,7 @@ class ReportController extends BaseHotelController
                 $shiftTotal = array_reduce($reconciliation, fn($carry, $item) => $carry + (float)$item['total_collected'], 0.0);
 
                 // Calculate Expenses for the month
-                $db = Database::getConnection();
+                $db = $this->db->getPDO();
                 $stmt = $db->prepare("SELECT SUM(amount) FROM expenses WHERE hotel_id = :hotel_id AND YEAR(date) = :y AND MONTH(date) = :m");
                 $stmt->execute(['hotel_id' => $this->hotelId, 'y' => $year, 'm' => $month]);
                 $totalExpenses = (float)$stmt->fetchColumn();

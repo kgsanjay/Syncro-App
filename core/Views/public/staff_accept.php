@@ -21,7 +21,7 @@
                 </div>
             <?php endif; ?>
 
-            <form action="/staff/accept" method="POST" class="space-y-5">
+            <form action="<?= base_url('/staff/accept') ?>" method="POST" class="space-y-5">
                 <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                 
                 <div>

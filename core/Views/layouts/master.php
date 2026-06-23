@@ -12,7 +12,7 @@ $errorMsg   = SessionManager::getFlash('error');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken ?? '') ?>">
+    <?= csrf_meta() ?>">
     <title><?= SecurityManager::sanitizeOutput($pageTitle ?? 'Syncro | Adhyan Channel Manager') ?></title>
     
     <script src="<?= BASE_PATH ?>/assets/js/tailwindcss.js?v=1.0"></script>
@@ -23,13 +23,13 @@ $errorMsg   = SessionManager::getFlash('error');
             theme: {
                 extend: {
                     colors: {
-                        theme: '#4f46e5',
-                        theme2: '#312e81',
-                        header: '#0f172a',
-                        text: '#475569',
-                        light: '#f8fafc',
-                        border: '#e2e8f0',
-                        white: '#ffffff',
+                        theme: 'var(--theme2)',
+                        theme2: 'var(--theme2)',
+                        header: 'var(--header)',
+                        text: 'var(--text)',
+                        light: 'var(--light)',
+                        border: 'var(--border)',
+                        white: 'var(--white)',
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'], 

@@ -16,14 +16,14 @@
     <?php if ($successMsg = \Syncro\Security\SessionManager::getFlash('success') ?? ($_GET['success'] ?? null)): ?>
         <div class="bg-[var(--light)] border-l-4 border-[var(--theme2)] p-4 mb-8 rounded shadow-sm flex items-center">
             <svg class="w-5 h-5 text-[var(--theme2)] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            <p class="text-sm font-bold text-[var(--header)]"><?= htmlspecialchars(is_string($successMsg) ? $successMsg : 'Action completed successfully.') ?></p>
+            <p class="text-sm font-bold text-[var(--header)]"><?= e(is_string($successMsg) ? $successMsg : 'Action completed successfully.') ?></p>
         </div>
     <?php endif; ?>
     
     <?php if ($errorMsg = \Syncro\Security\SessionManager::getFlash('error') ?? ($_GET['error'] ?? null)): ?>
         <div class="bg-[var(--light)] border-l-4 border-[var(--theme)] p-4 mb-8 rounded shadow-sm flex items-center">
             <svg class="w-5 h-5 text-[var(--theme)] mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <p class="text-sm font-bold text-[var(--header)]"><?= htmlspecialchars(is_string($errorMsg) ? $errorMsg : 'Error processing request.') ?></p>
+            <p class="text-sm font-bold text-[var(--header)]"><?= e(is_string($errorMsg) ? $errorMsg : 'Error processing request.') ?></p>
         </div>
     <?php endif; ?>
 
@@ -55,7 +55,7 @@
                 <span class="bg-[var(--theme2)] text-[var(--white)] text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg shadow-lg shadow-[var(--theme2)]/20">System Live</span>
             </div>
             <span class="text-5xl font-black text-[var(--header)] tracking-tighter pl-3 flex items-baseline gap-3">
-                <?= $activeHotels ?? 0 ?> <span class="text-xl text-[var(--text)] opacity-20">/ <?= $totalHotels ?? 0 ?></span>
+                <?= e((string) $activeHotels ?? 0) ?> <span class="text-xl text-[var(--text)] opacity-20">/ <?= e((string) $totalHotels ?? 0) ?></span>
             </span>
             <p class="text-[10px] text-[var(--text)] font-black uppercase mt-4 pl-3 tracking-[0.15em] opacity-60">Hotels Currently Online</p>
         </div>
@@ -71,8 +71,8 @@
             </h2>
         </div>
         <div class="p-8">
-            <form action="/admin/broadcast" method="POST" class="flex flex-col md:flex-row gap-6">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+            <form action="<?= base_url('/admin/broadcast') ?>" method="POST" class="flex flex-col md:flex-row gap-6">
+                <?= csrf_field() ?>">
                 
                 <div class="flex-1 relative">
                     <input type="text" name="message" required placeholder="Type a message to instantly broadcast globally..." class="w-full px-6 py-4 border-2 border-[var(--border)] rounded-2xl text-[14px] font-bold focus:ring-0 focus:border-[var(--theme2)] outline-none bg-[var(--light)] focus:bg-[var(--white)] transition-all text-[var(--header)]">
@@ -99,11 +99,11 @@
                         <div class="flex justify-between items-center p-4 rounded-2xl bg-[var(--light)]/50 border border-[var(--border)] backdrop-blur-sm group/item hover:bg-[var(--white)] transition-all">
                             <span class="text-sm font-bold text-[var(--header)]">
                                 <?php if($ann['type']==='warning') echo '🟧'; elseif($ann['type']==='success') echo '🟩'; else echo '🟦'; ?>
-                                <?= htmlspecialchars($ann['message']) ?>
+                                <?= e($ann['message']) ?>
                             </span>
-                            <form action="/admin/broadcast/delete" method="POST" class="m-0 p-0" onsubmit="return confirm('Terminate this broadcast?');">
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
-                                <input type="hidden" name="id" value="<?= $ann['id'] ?>">
+                            <form action="<?= base_url('/admin/broadcast/delete') ?>" method="POST" class="m-0 p-0" onsubmit="return confirm('Terminate this broadcast?');">
+                                <?= csrf_field() ?>">
+                                <input type="hidden" name="id" value="<?= e((string) $ann['id']) ?>">
                                 <button class="text-[var(--danger)] hover:bg-[var(--danger)] hover:text-[var(--white)] text-[9px] font-black uppercase tracking-[0.2em] bg-[var(--white)] px-4 py-2 rounded-xl shadow-sm border border-[var(--border)] transition-all">Terminate</button>
                             </form>
                         </div>
@@ -128,8 +128,8 @@
             </div>
             
             <div class="p-8">
-                <form action="/admin/hotels/create" method="POST" class="space-y-6">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                <form action="<?= base_url('/admin/hotels/create') ?>" method="POST" class="space-y-6">
+                    <?= csrf_field() ?>">
                     
                     <div>
                         <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] mb-2 opacity-50">Property Identity</label>
@@ -168,7 +168,7 @@
         <div class="xl:col-span-2 bg-[var(--white)] rounded-2xl shadow-2xl border border-[var(--border)] overflow-hidden h-fit group hover:shadow-indigo-500/5 transition-all">
             <div class="p-8 border-b border-[var(--border)] bg-[var(--light)]/50 flex items-center justify-between">
                 <h3 class="text-base font-black text-[var(--header)] uppercase tracking-tight">Recent Infrastructure Leases</h3>
-                <a href="/admin/hotels" class="text-[9px] font-black text-[var(--theme2)] uppercase tracking-[0.2em] hover:text-[var(--header)] p-3 rounded-xl bg-[var(--white)] shadow-sm border border-[var(--border)] transition-all hover:-translate-y-1 active:scale-95 flex items-center">
+                <a href="<?= base_url('/admin/hotels') ?>" class="text-[9px] font-black text-[var(--theme2)] uppercase tracking-[0.2em] hover:text-[var(--header)] p-3 rounded-xl bg-[var(--white)] shadow-sm border border-[var(--border)] transition-all hover:-translate-y-1 active:scale-95 flex items-center">
                     Universal Registry
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </a>
@@ -201,23 +201,23 @@
                                 
                                 <td class="px-8 py-6 align-top">
                                     <div class="text-[15px] font-black text-[var(--header)] flex items-center mb-1 tracking-tight">
-                                        <?= \Syncro\Security\SecurityManager::sanitizeOutput($h['property_name'] ?? '') ?>
+                                        <?= e($h['property_name'] ?? '') ?>
                                         <?php if($isSuspended): ?>
                                             <span class="ml-3 px-2 py-0.5 text-[8px] font-black bg-[var(--danger)] text-[var(--white)] rounded uppercase tracking-[0.2em] shadow-lg animate-pulse">Suspended Account</span>
                                         <?php endif; ?>
                                     </div>
-                                    <a href="/book/<?= \Syncro\Security\SecurityManager::sanitizeOutput($h['slug'] ?? '') ?>" target="_blank" class="text-[11px] text-[var(--theme2)] hover:text-[var(--header)] font-black tracking-widest mb-3 block transition-all uppercase opacity-60 hover:opacity-100">
-                                        /book/<?= \Syncro\Security\SecurityManager::sanitizeOutput($h['slug'] ?? '') ?> &rarr;
+                                    <a href="<?= base_url() ?>/book/<?= e($h['slug'] ?? '') ?>" target="_blank" class="text-[11px] text-[var(--theme2)] hover:text-[var(--header)] font-black tracking-widest mb-3 block transition-all uppercase opacity-60 hover:opacity-100">
+                                        /book/<?= e($h['slug'] ?? '') ?> &rarr;
                                     </a>
                                     <div class="text-[11px] text-[var(--text)] flex items-center font-bold font-mono opacity-40">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                        <?= \Syncro\Security\SecurityManager::sanitizeOutput($h['admin_email'] ?? '') ?>
+                                        <?= e($h['admin_email'] ?? '') ?>
                                     </div>
                                 </td>
                                 
                                 <td class="px-8 py-6 align-top">
                                     <div class="text-[10px] font-black mb-1.5 uppercase tracking-[0.2em] inline-block px-2 py-0.5 rounded-md <?= $isExpired ? 'bg-[var(--danger)]/10 text-[var(--danger)]' : 'bg-[var(--success)]/10 text-[var(--success)]' ?>">
-                                        <?= \Syncro\Security\SecurityManager::sanitizeOutput($h['subscription_plan'] ?? 'Enterprise Unidentified') ?>
+                                        <?= e($h['subscription_plan'] ?? 'Enterprise Unidentified') ?>
                                     </div>
                                     <div class="text-[13px] font-black text-[var(--header)] tracking-tight mt-2">
                                         Vigilance: <?= !empty($h['next_billing_date']) ? date('M j, Y', strtotime($h['next_billing_date'])) : 'Infinity' ?>
@@ -232,12 +232,12 @@
                                 <td class="px-8 py-6 text-right align-top">
                                     <div class="flex flex-col items-end gap-3 opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 transition-all duration-300 transform sm:group-hover/row:translate-x-0 sm:translate-x-4">
                                         
-                                        <a href="/admin/hotels/edit?id=<?= $h['id'] ?>" class="bg-[var(--header)] text-[var(--white)] font-black px-6 py-2.5 rounded-xl text-[9px] transition-all shadow-xl hover:bg-[var(--theme2)] uppercase tracking-[0.2em] w-full text-center hover:-translate-y-0.5 active:scale-95">
+                                        <a href="<?= base_url() ?>/admin/hotels/edit?id=<?= e((string) $h['id']) ?>" class="bg-[var(--header)] text-[var(--white)] font-black px-6 py-2.5 rounded-xl text-[9px] transition-all shadow-xl hover:bg-[var(--theme2)] uppercase tracking-[0.2em] w-full text-center hover:-translate-y-0.5 active:scale-95">
                                             Administer Control
                                         </a>
                                         
-                                        <form action="/admin/hotels/extend" method="POST" onsubmit="return confirm('Extend operational license for 1 month?');" class="w-full">
-                                            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                                        <form action="<?= base_url('/admin/hotels/extend') ?>" method="POST" onsubmit="return confirm('Extend operational license for 1 month?');" class="w-full">
+                                            <?= csrf_field() ?>">
                                             <input type="hidden" name="hotel_id" value="<?= (int)$h['id'] ?>">
                                             <button type="submit" class="bg-[var(--white)] text-[var(--theme2)] border-2 border-[var(--theme2)]/20 hover:border-[var(--theme2)] hover:bg-[var(--theme2)] hover:text-[var(--white)] font-black px-6 py-2 rounded-xl text-[9px] transition-all shadow-xl uppercase tracking-[0.2em] w-full hover:-translate-y-0.5 active:scale-95">
                                                 Ledger Release (+1M)

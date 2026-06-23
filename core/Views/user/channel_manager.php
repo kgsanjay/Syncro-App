@@ -15,8 +15,8 @@
             </h3>
         </div>
         
-        <form action="/user/channel-manager" method="POST" class="p-6 bg-[var(--light)] space-y-4">
-            <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+        <form action="<?= base_url('/user/channel-manager') ?>" method="POST" class="p-6 bg-[var(--light)] space-y-4">
+            <?= csrf_field() ?>">
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
@@ -117,8 +117,8 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <form action="/user/channel-manager/delete" method="POST" onsubmit="return confirm('Immediately sever this connection? Inventory will stop syncing for <?= htmlspecialchars($map['channel_name']) ?>.');">
-                                        <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                                    <form action="<?= base_url('/user/channel-manager/delete') ?>" method="POST" onsubmit="return confirm('Immediately sever this connection? Inventory will stop syncing for <?= htmlspecialchars($map['channel_name']) ?>.');">
+                                        <?= csrf_field() ?>">
                                         <input type="hidden" name="mapping_id" value="<?= $map['id'] ?>">
                                         <button type="submit" class="text-[10px] text-[var(--header)] font-black bg-[var(--theme)] hover:bg-[var(--danger)] hover:text-[var(--white)] transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-lg uppercase tracking-[0.2em] shadow-sm border border-[var(--theme)]/30">Sever Link</button>
                                     </form>

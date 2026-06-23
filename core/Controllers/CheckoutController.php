@@ -9,6 +9,13 @@ use Exception;
 
 class CheckoutController extends BaseController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * Step 1: Initialize the PhonePe Order and Redirect
      */
@@ -17,7 +24,7 @@ class CheckoutController extends BaseController
         $bookingId = (int)($postData['booking_id'] ?? 0);
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             
             $stmt = $db->prepare("
                 SELECT b.*, h.phonepe_merchant_id, h.phonepe_salt_key, h.phonepe_env, h.slug 
@@ -90,7 +97,7 @@ class CheckoutController extends BaseController
 
             if (isset($orderData['success']) && $orderData['success'] === true) {
                 // Save the generated transaction ID to verify later
-                Database::table('bookings')
+                $this->db->getTable('bookings')
                     ->where('id', $bookingId)
                     ->update(['transaction_id' => $merchantTransactionId]);
 
@@ -123,7 +130,7 @@ class CheckoutController extends BaseController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("
                 SELECT b.id, b.total_price, b.hotel_id, b.guest_email, b.guest_name, b.check_in, b.check_out, h.phonepe_merchant_id, h.phonepe_salt_key, h.phonepe_env, h.slug, h.property_name as hotel_name
                 FROM bookings b
@@ -172,14 +179,14 @@ class CheckoutController extends BaseController
                 // Secure Transaction & Update Ledger
                 $db->beginTransaction();
 
-                Database::table('bookings')
+                $this->db->getTable('bookings')
                     ->where('id', $booking['id'])
                     ->update([
                         'payment_status' => 'paid',
                         'transaction_id' => $statusData['data']['transactionId'] // Use actual Bank Reference ID
                     ]);
 
-                Database::table('payments')->insert([
+                $this->db->getTable('payments')->insert([
                     'hotel_id'       => $booking['hotel_id'],
                     'booking_id'     => $booking['id'],
                     'amount'         => (float)$booking['total_price'],
@@ -242,20 +249,58 @@ class CheckoutController extends BaseController
             return;
         }
 
-        $decodedResponse = json_decode(base64_decode($data['response']), true);
-        $merchantTransactionId = $decodedResponse['data']['merchantTransactionId'] ?? '';
-        $code = $decodedResponse['code'] ?? '';
-
-        if (empty($merchantTransactionId)) {
-            http_response_code(400);
-            echo "Missing transaction ID";
-            return;
-        }
-
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
+
+            // 1. Verify X-VERIFY checksum header using PHONEPE_SALT_KEY from environment
+            $saltKey = $_ENV['PHONEPE_SALT_KEY'] ?? getenv('PHONEPE_SALT_KEY');
+            if (empty($saltKey)) {
+                $stmtSettings = $db->query("SELECT setting_value FROM platform_settings WHERE setting_key = 'phonepe_salt_key'");
+                $saltKey = $stmtSettings->fetchColumn() ?: '';
+            }
+
+            // Extract salt index from header (e.g., checksum###1)
+            $parts = explode('###', $verifyHeader);
+            $saltIndex = $parts[1] ?? '1';
+            
+            $expectedChecksum = hash('sha256', $data['response'] . $saltKey) . '###' . $saltIndex;
+
+            if (!hash_equals($expectedChecksum, $verifyHeader)) {
+                http_response_code(401);
+                echo "Unauthorized Checksum Mismatch";
+                return;
+            }
+
+            // 2. Extract transaction_id from the verified payload
+            $decodedResponse = json_decode(base64_decode($data['response']), true);
+            $merchantTransactionId = $decodedResponse['data']['merchantTransactionId'] ?? '';
+            $transactionId = $decodedResponse['data']['transactionId'] ?? ''; // Bank transaction ID
+            $code = $decodedResponse['code'] ?? '';
+            
+            // Fallback to merchantTransactionId if bank transactionId is missing in failure cases
+            $idempotencyTxnId = !empty($transactionId) ? $transactionId : $merchantTransactionId;
+
+            if (empty($merchantTransactionId)) {
+                http_response_code(400);
+                echo "Missing transaction ID";
+                return;
+            }
+
+            // 3. Idempotency Check: Query the payments table for this exact transaction_id
+            $stmtCheck = $db->prepare("SELECT id FROM payments WHERE transaction_id = :tid");
+            // If the payments table has a 'status' column we can append `AND status = 'SUCCESS'`,
+            // but checking for the record's existence prevents double-insertion.
+            $stmtCheck->execute(['tid' => $idempotencyTxnId]);
+            if ($stmtCheck->fetch()) {
+                // If a record with this exact transaction_id already exists, immediately return a 200 OK
+                http_response_code(200);
+                echo "OK - Idempotent Request, Already Processed";
+                return;
+            }
+
+            // Look up booking by merchantTransactionId
             $stmt = $db->prepare("
-                SELECT b.id, b.total_price, b.payment_status, b.hotel_id, b.guest_email, b.guest_name, b.check_in, b.check_out, h.phonepe_salt_key, h.property_name as hotel_name
+                SELECT b.id, b.total_price, b.payment_status, b.hotel_id, b.guest_email, b.guest_name, b.check_in, b.check_out, h.property_name as hotel_name
                 FROM bookings b
                 JOIN hotels h ON b.hotel_id = h.id
                 WHERE b.transaction_id = :tid
@@ -264,23 +309,8 @@ class CheckoutController extends BaseController
             $booking = $stmt->fetch();
 
             if (!$booking) {
-                // SaaS Renewal Webhook fallback
+                // SaaS Renewal Webhook fallback or not found
                 if (strpos($merchantTransactionId, 'RENEW_') === 0) {
-                    $saltKey = getenv('PHONEPE_SALT_KEY');
-                    if (!$saltKey) {
-                        $stmtSettings = $db->query("SELECT setting_value FROM platform_settings WHERE setting_key = 'phonepe_salt_key'");
-                        $saltKey = $stmtSettings->fetchColumn();
-                    }
-                    
-                    $expectedChecksum = hash('sha256', $data['response'] . $saltKey) . '###1';
-
-                    if (!hash_equals($expectedChecksum, $verifyHeader)) {
-                        http_response_code(401);
-                        echo "Unauthorized Checksum Mismatch";
-                        return;
-                    }
-                    
-                    // SaaS renewal is handled in HotelController usually, just ack
                     http_response_code(200);
                     echo "OK";
                     return;
@@ -291,44 +321,43 @@ class CheckoutController extends BaseController
                 return;
             }
 
-            // Guest Booking Webhook
-            $saltKey = $booking['phonepe_salt_key'] ?? '';
-            $expectedChecksum = hash('sha256', $data['response'] . $saltKey) . '###1';
-
-            if (!hash_equals($expectedChecksum, $verifyHeader)) {
-                http_response_code(401);
-                echo "Unauthorized Checksum Mismatch";
-                return;
-            }
-
             if ($booking['payment_status'] === 'paid') {
                 http_response_code(200);
-                echo "OK - Already Processed";
+                echo "OK - Booking Already Paid";
                 return;
             }
 
             if ($code === 'PAYMENT_SUCCESS' && isset($decodedResponse['data']['state']) && $decodedResponse['data']['state'] === 'COMPLETED') {
+                
+                // 4. Wrap the entire payment success logic inside a single Database Transaction
                 $db->beginTransaction();
 
-                Database::table('bookings')
-                    ->where('id', $booking['id'])
-                    ->update([
-                        'payment_status' => 'paid',
-                        'transaction_id' => $decodedResponse['data']['transactionId']
+                try {
+                    $this->db->getTable('bookings')
+                        ->where('id', $booking['id'])
+                        ->update([
+                            'payment_status' => 'paid',
+                            'transaction_id' => $transactionId
+                        ]);
+
+                    // Update invoice if it exists, or change reservation status (mapped as bookings here)
+                    $this->db->getTable('payments')->insert([
+                        'hotel_id'       => $booking['hotel_id'],
+                        'booking_id'     => $booking['id'],
+                        'amount'         => (float)$booking['total_price'],
+                        'payment_method' => 'PhonePe IBE (Webhook)',
+                        'transaction_id' => $transactionId,
+                        'notes'          => 'Public Website Booking Deposit',
+                        'status'         => 'SUCCESS' // ensuring SUCCESS status is stored if the column exists
                     ]);
 
-                Database::table('payments')->insert([
-                    'hotel_id'       => $booking['hotel_id'],
-                    'booking_id'     => $booking['id'],
-                    'amount'         => (float)$booking['total_price'],
-                    'payment_method' => 'PhonePe IBE (Webhook)',
-                    'transaction_id' => $decodedResponse['data']['transactionId'],
-                    'notes'          => 'Public Website Booking Deposit'
-                ]);
+                    $db->commit();
+                } catch (Exception $txException) {
+                    $db->rollBack();
+                    throw $txException;
+                }
 
-                $db->commit();
-
-                // Send Email Confirmation
+                // Send Email Confirmation outside the transaction
                 \Syncro\Services\EmailService::sendBookingConfirmation(
                     $booking['guest_email'],
                     $booking['guest_name'],
@@ -343,9 +372,6 @@ class CheckoutController extends BaseController
             echo "OK";
 
         } catch (Exception $e) {
-            if (isset($db) && $db->inTransaction()) {
-                $db->rollBack();
-            }
             error_log("Webhook Error: " . $e->getMessage());
             http_response_code(500);
             echo "Internal Server Error";

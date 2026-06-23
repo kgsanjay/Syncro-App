@@ -8,3 +8,20 @@ assets/uploads/
 uploads/
 cache/*.cache
 .DS_Store
+
+# Added by Refactoring Process
+vendor/
+node_modules/
+.venv/
+scratch/
+test*.php
+test*.py
+test_out.txt
+*.html
+*.png
+cookie*.txt
+dashboard_*.png
+mobile_*.png
+login_*.png
+*.patch
+.github/

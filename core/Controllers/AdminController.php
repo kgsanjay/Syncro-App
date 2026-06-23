@@ -11,13 +11,20 @@ use Exception;
 
 class AdminController extends BaseController
 {
-    public function __construct()
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
     {
+        $this->db = $db;
         SessionManager::start();
-        // SECURITY: Only the SaaS Founder can access this Controller
-        if (empty($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
-            $this->logUnauthorizedAccess();
+        if (empty($_SESSION['user_id'])) {
             $this->redirect('/login');
+            exit;
+        }
+
+        if ($_SESSION['role'] !== 'super_admin') {
+            $this->logUnauthorizedAccess();
+            $this->redirect('/user/dashboard');
             exit;
         }
     }
@@ -28,7 +35,7 @@ class AdminController extends BaseController
 
     public function dashboard(): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         // 1. Get Hotel Statistics & MRR
         $stmt = $db->query("
@@ -66,7 +73,7 @@ class AdminController extends BaseController
         $platformGmv = (float)$stmt->fetchColumn();
 
         // 3. Get Active Broadcasts
-        $announcements = Database::table('announcements')->orderBy('created_at', 'DESC')->get();
+        $announcements = $this->db->getTable('announcements')->orderBy('created_at', 'DESC')->get();
 
         $this->render('admin/dashboard', [
             'pageTitle'     => 'SaaS Command Center',
@@ -82,13 +89,12 @@ class AdminController extends BaseController
 
     public function createBroadcast(array $postData): void
     {
-        $this->validateCsrf($postData);
-        
+
         $message = strip_tags(trim($postData['message'] ?? ''));
         $type = $postData['type'] ?? 'info';
 
         if (!empty($message)) {
-            Database::table('announcements')->insert([
+            $this->db->getTable('announcements')->insert([
                 'title' => 'System Update',
                 'message' => $message,
                 'type' => $type,
@@ -101,11 +107,11 @@ class AdminController extends BaseController
 
     public function deleteBroadcast(array $postData): void
     {
-        $this->validateCsrf($postData);
+
         $id = (int)($postData['id'] ?? 0);
         
         if ($id) {
-            Database::table('announcements')->where('id', $id)->delete();
+            $this->db->getTable('announcements')->where('id', $id)->delete();
             SessionManager::setFlash('success', 'Broadcast removed.');
         }
         $this->redirect('/admin/dashboard');
@@ -124,22 +130,23 @@ class AdminController extends BaseController
 
     public function storeHotel(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            die("Security Violation: CSRF token mismatch.");
-        }
+        $dataToValidate = $postData;
+        $dataToValidate['admin_email'] = $postData['admin_email'] ?? $postData['email'] ?? '';
+        $dataToValidate['admin_name'] = $postData['admin_name'] ?? 'Hotel Admin';
 
-        $propertyName = strip_tags(trim($postData['property_name'] ?? ''));
+        $validated = \Syncro\Security\Validator::validate($dataToValidate, [
+            'property_name' => 'required|min:2|max:150',
+            'admin_name' => 'required|max:100',
+            'admin_email' => 'required|email'
+        ]);
+
+        $propertyName = $validated['property_name'];
         $slug = strip_tags(trim($postData['slug'] ?? strtolower(str_replace(' ', '-', $propertyName))));
-        $adminName = strip_tags(trim($postData['admin_name'] ?? 'Hotel Admin'));
-        $email = trim(filter_var($postData['admin_email'] ?? $postData['email'] ?? '', FILTER_SANITIZE_EMAIL));
-        
-        if (empty($propertyName) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->redirect('/admin/dashboard?error=invalid_input'); 
-            return;
-        }
+        $adminName = $validated['admin_name'];
+        $email = $validated['admin_email'];
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction();
 
             $stmt = $db->prepare("SELECT id FROM users WHERE email = :email");
@@ -210,7 +217,7 @@ class AdminController extends BaseController
 
     public function hotels(): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->query("
             SELECT h.id, h.property_name, h.slug, h.status, h.created_at, u.email as admin_email 
@@ -234,7 +241,7 @@ class AdminController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->prepare("
             SELECT h.*, u.email 
@@ -269,9 +276,6 @@ class AdminController extends BaseController
 
     public function updateHotel(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) {
-            die("Security Violation: CSRF token mismatch.");
-        }
 
         $hotelId = (int)($postData['hotel_id'] ?? 0);
         
@@ -286,7 +290,7 @@ class AdminController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $db->beginTransaction();
 
         try {
@@ -321,13 +325,12 @@ class AdminController extends BaseController
 
     public function extendSubscription(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
         if (!$hotelId) { $this->redirect('/admin/dashboard'); return; }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction(); 
 
             $stmt = $db->prepare("SELECT next_billing_date FROM hotels WHERE id = :hid");
@@ -369,14 +372,13 @@ class AdminController extends BaseController
     
     public function updateHotelBilling(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
         $plan = strip_tags(trim($postData['subscription_plan'] ?? ''));
         $billingDate = $postData['next_billing_date'] ?? '';
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("UPDATE hotels SET subscription_plan = :plan, next_billing_date = :date WHERE id = :hid");
             $stmt->execute(['plan' => $plan, 'date' => $billingDate, 'hid' => $hotelId]);
 
@@ -390,8 +392,7 @@ class AdminController extends BaseController
 
     public function toggleStatus(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
         $action = $postData['action'] ?? '';
         $newStatus = ($action === 'suspend') ? 'suspended' : 'active';
@@ -399,7 +400,7 @@ class AdminController extends BaseController
         if (!$hotelId) { $this->redirect('/admin/dashboard'); return; }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction(); 
 
             $stmt = $db->prepare("UPDATE hotels SET status = :status WHERE id = :hid");
@@ -435,7 +436,7 @@ class AdminController extends BaseController
     {
         if (!empty($_SESSION['user_id'])) {
             try {
-                $db = Database::getConnection();
+                $db = $this->db->getPDO();
                 $stmt = $db->prepare("INSERT INTO audit_logs (user_id, action, description, ip_address) VALUES (:uid, 'SECURITY_VIOLATION', 'Attempted unauthorized access to Super Admin portal', :ip)");
                 $stmt->execute([
                     'uid' => $_SESSION['user_id'],
@@ -451,15 +452,14 @@ class AdminController extends BaseController
 
     public function updateHotelDetails(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
         $propertyName = strip_tags(trim($postData['property_name'] ?? ''));
         $slug = strip_tags(trim($postData['slug'] ?? ''));
         $email = trim(filter_var($postData['admin_email'] ?? '', FILTER_SANITIZE_EMAIL));
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction();
 
             $stmt = $db->prepare("UPDATE hotels SET property_name = :name, slug = :slug WHERE id = :hid");
@@ -478,8 +478,7 @@ class AdminController extends BaseController
 
     public function forcePasswordReset(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
         $newPassword = $postData['new_password'] ?? '';
 
@@ -489,7 +488,7 @@ class AdminController extends BaseController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction();
 
             $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
@@ -514,12 +513,11 @@ class AdminController extends BaseController
 
     public function impersonateHotel(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("
                 SELECT u.id, u.name, h.property_name 
                 FROM users u 
@@ -557,12 +555,11 @@ class AdminController extends BaseController
 
     public function deleteHotel(array $postData): void
     {
-        if (!SecurityManager::validateCsrfToken($postData['csrf_token'] ?? '')) die("Security Violation");
-        
+
         $hotelId = (int)($postData['hotel_id'] ?? 0);
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $db->beginTransaction();
             
             $db->prepare("DELETE FROM pos_charges WHERE booking_id IN (SELECT id FROM bookings WHERE hotel_id = :hid)")->execute(['hid' => $hotelId]);
@@ -590,7 +587,7 @@ class AdminController extends BaseController
 
     public function supportInbox(): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->query("
             SELECT t.*, h.property_name, u.name as user_name 
@@ -615,7 +612,7 @@ class AdminController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         $stmt = $db->prepare("
             SELECT t.*, h.property_name, u.name as user_name, u.email as user_email
@@ -651,8 +648,7 @@ class AdminController extends BaseController
 
     public function supportReply(array $postData): void
     {
-        $this->validateCsrf($postData);
-        
+
         $ticketId = (int)($postData['ticket_id'] ?? 0);
         $message = strip_tags(trim($postData['message'] ?? ''));
 
@@ -662,7 +658,7 @@ class AdminController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $db->beginTransaction();
 
         try {
@@ -697,8 +693,7 @@ class AdminController extends BaseController
 
     public function supportChangeStatus(array $postData): void
     {
-        $this->validateCsrf($postData);
-        
+
         $ticketId = (int)($postData['ticket_id'] ?? 0);
         $status = $postData['status'] ?? '';
 
@@ -708,7 +703,7 @@ class AdminController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("UPDATE support_tickets SET status = :status, updated_at = NOW() WHERE id = :id");
         $stmt->execute(['status' => $status, 'id' => $ticketId]);
 
@@ -722,7 +717,7 @@ class AdminController extends BaseController
 
     public function settings(): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         
         // Fetch all global settings
         $stmt = $db->query("SELECT setting_key, setting_value FROM platform_settings");
@@ -744,8 +739,8 @@ class AdminController extends BaseController
 
     public function updateSettings(array $postData): void
     {
-        $this->validateCsrf($postData);
-        $db = Database::getConnection();
+
+        $db = $this->db->getPDO();
 
         // UPDATED: Now dynamically stores PhonePe keys instead of Razorpay
         $settingsToUpdate = [
@@ -786,7 +781,6 @@ class AdminController extends BaseController
 
     public function updatePassword(array $postData): void
     {
-        $this->validateCsrf($postData);
 
         $current = $postData['current_password'] ?? '';
         $new = $postData['new_password'] ?? '';
@@ -798,7 +792,7 @@ class AdminController extends BaseController
             return;
         }
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("SELECT password_hash FROM users WHERE id = :id");
         $stmt->execute(['id' => $_SESSION['user_id']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -884,7 +878,7 @@ class AdminController extends BaseController
 
     public function setupGoogle2fa(): void
     {
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("SELECT name, email, two_factor_enabled FROM users WHERE id = :id");
         $stmt->execute(['id' => $_SESSION['user_id']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -912,7 +906,6 @@ class AdminController extends BaseController
 
     public function verifyAndEnableGoogle2fa(array $postData): void
     {
-        $this->validateCsrf($postData);
 
         $code = preg_replace('/[^0-9]/', '', $postData['code'] ?? '');
         $secret = $_SESSION['pending_google_2fa_secret'] ?? '';
@@ -925,7 +918,7 @@ class AdminController extends BaseController
 
         $twoFactorService = new \Syncro\Services\TwoFactorService();
         if ($twoFactorService->verifyCode($secret, $code)) {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("UPDATE users SET two_factor_secret = :secret, two_factor_enabled = 1 WHERE id = :id");
             $stmt->execute(['secret' => $secret, 'id' => $_SESSION['user_id']]);
 
@@ -940,13 +933,20 @@ class AdminController extends BaseController
 
     public function disableGoogle2fa(array $postData): void
     {
-        $this->validateCsrf($postData);
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
         $stmt = $db->prepare("UPDATE users SET two_factor_secret = NULL, two_factor_enabled = 0 WHERE id = :id");
         $stmt->execute(['id' => $_SESSION['user_id']]);
 
         SessionManager::setFlash('success', 'Two-Factor Authentication disabled.');
         $this->redirect('/admin/settings');
+    }
+
+    /**
+     * Override render to use 'admin_layout' by default for superadmin pages
+     */
+    protected function render(string $view, array $data = [], string $layout = 'admin_layout'): void
+    {
+        parent::render($view, $data, $layout);
     }
 }

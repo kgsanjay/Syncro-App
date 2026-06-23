@@ -7,8 +7,16 @@ use Syncro\Models\Database;
 use Syncro\Security\SessionManager;
 use Exception;
 
-class NotificationController extends BaseController
+class NotificationController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+        parent::__construct($db);
+    }
+
     /**
      * Endpoint for Server-Sent Events (SSE)
      * Streams real-time notifications to the client browser.
@@ -35,7 +43,7 @@ class NotificationController extends BaseController
         // Prevent buffering from Nginx/Apache
         header('X-Accel-Buffering: no'); 
 
-        $db = Database::getConnection();
+        $db = $this->db->getPDO();
 
         // Client can pass Last-Event-ID to resume stream
         $lastId = isset($_SERVER["HTTP_LAST_EVENT_ID"]) ? (int)$_SERVER["HTTP_LAST_EVENT_ID"] : 0;
@@ -118,7 +126,7 @@ class NotificationController extends BaseController
         $notifId = (int)($data['id'] ?? 0);
 
         if ($notifId > 0) {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("UPDATE notifications SET is_read = 1 WHERE id = ? AND hotel_id = ?");
             $stmt->execute([$notifId, $_SESSION['hotel_id']]);
         }

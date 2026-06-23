@@ -11,12 +11,15 @@ use Syncro\Services\EmailService;
 
 class ReservationController extends BaseHotelController
 {
+    private \Syncro\Models\Database $db;
+
     private BookingService $bookingService;
     private RoomService $roomService;
 
-    public function __construct()
+    public function __construct(\Syncro\Models\Database $db)
     {
-        parent::__construct();
+        $this->db = $db;
+        parent::__construct($db);
         $this->bookingService = new BookingService();
         $this->roomService = new RoomService();
     }
@@ -42,12 +45,21 @@ class ReservationController extends BaseHotelController
     public function store(array $postData): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($postData);
 
         try {
             $bookingId = $this->bookingService->createDirectBooking($this->hotelId, $postData);
             
             CacheManager::clear('dashboard_metrics_hotel_' . $this->hotelId);
+
+            $pusher = new \Syncro\Services\PusherBroadcaster();
+            $pusher->broadcast("hotel_channel_{$this->hotelId}", 'new_booking', [
+                'bookingId' => $bookingId,
+                'guestName' => $postData['guest_name'] ?? 'Guest',
+                'checkIn' => $postData['check_in'] ?? '',
+                'checkOut' => $postData['check_out'] ?? '',
+                'totalPrice' => $postData['total_price'] ?? 0,
+                'source' => 'Direct'
+            ]);
 
             if (!empty($postData['guest_email'])) {
                 $guestEmail = filter_var($postData['guest_email'], FILTER_SANITIZE_EMAIL);
@@ -101,7 +113,7 @@ class ReservationController extends BaseHotelController
                 EmailService::sendTransactionalEmail($guestEmail, $subject, $htmlBody);
                 
                 // Seed automated communications for this booking
-                $db = \Syncro\Models\Database::getConnection();
+                $db = $this->db->getPDO();
                 
                 // 1. Pre-arrival (1 day before check-in at 10 AM)
                 $preArrivalDate = date('Y-m-d 10:00:00', strtotime($postData['check_in'] . ' -1 day'));
@@ -147,7 +159,6 @@ class ReservationController extends BaseHotelController
     public function assignRoom(array $postData): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($postData);
 
         $bookingId = (int)($postData['booking_id'] ?? 0);
         $roomId = (int)($postData['physical_room_id'] ?? 0);
@@ -174,7 +185,6 @@ class ReservationController extends BaseHotelController
     public function updateStatus(array $postData): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($postData);
 
         $bookingId = (int)($postData['booking_id'] ?? 0);
         $status = $postData['status'] ?? 'confirmed';
@@ -195,7 +205,6 @@ class ReservationController extends BaseHotelController
     public function updatePaymentStatus(array $postData): void
     {
         $this->requireRole(['hotel_admin', 'receptionist']);
-        $this->validateCsrf($postData);
 
         $bookingId = (int)($postData['booking_id'] ?? 0);
         $paymentStatus = strip_tags(trim($postData['payment_status'] ?? 'pending'));

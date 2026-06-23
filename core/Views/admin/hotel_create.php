@@ -2,7 +2,7 @@
 
 <div class="mb-10 flex flex-col sm:flex-row sm:items-center justify-between space-y-6 sm:space-y-0 pb-6 border-b-2 border-[var(--border)]">
     <div class="flex items-center gap-6">
-        <a href="/admin/hotels" class="w-12 h-12 bg-[var(--white)] rounded-2xl border border-[var(--border)] flex items-center justify-center text-[var(--text)] hover:text-[var(--theme2)] hover:bg-[var(--light)] transition-all shadow-lg hover:-translate-x-1 active:scale-95 group">
+        <a href="<?= base_url('/admin/hotels') ?>" class="w-12 h-12 bg-[var(--white)] rounded-2xl border border-[var(--border)] flex items-center justify-center text-[var(--text)] hover:text-[var(--theme2)] hover:bg-[var(--light)] transition-all shadow-lg hover:-translate-x-1 active:scale-95 group">
             <svg class="w-6 h-6 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         </a>
         <div>
@@ -18,7 +18,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
         <p class="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--header)]">
-            <?= \Syncro\Security\SecurityManager::sanitizeOutput($error ?? 'Protocol Aborted: Identifier Conflict Detected.') ?>
+            <?= e($error ?? 'Protocol Aborted: Identifier Conflict Detected.') ?>
         </p>
     </div>
 <?php endif; ?>
@@ -27,8 +27,8 @@
     <div class="absolute top-0 right-0 -mr-24 -mt-24 w-80 h-80 bg-[var(--theme2)] rounded-full opacity-10 blur-3xl pointer-events-none group-hover:opacity-20 transition-opacity"></div>
     <div class="absolute bottom-0 left-0 -ml-24 -mb-24 w-64 h-64 bg-[var(--theme)] rounded-full opacity-5 blur-2xl pointer-events-none"></div>
 
-    <form action="/admin/hotels/create" method="POST" class="space-y-12 relative z-10 m-0">
-        <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? $_SESSION['csrf_token']) ?>">
+    <form action="<?= base_url('/admin/hotels/create') ?>" method="POST" class="space-y-12 relative z-10 m-0">
+        <?= csrf_field() ?>">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div class="space-y-8">

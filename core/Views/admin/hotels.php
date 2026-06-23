@@ -23,7 +23,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_credentials']);
             <h1 class="text-3xl font-extrabold text-[var(--header)] tracking-tight mb-1">Client Hotels Directory</h1>
             <p class="text-sm text-[var(--text)] font-medium">Manage tenant accounts, edit details, and monitor system access.</p>
         </div>
-        <a href="/admin/hotels/create" class="w-full sm:w-auto text-center bg-[var(--theme2)] text-[var(--white)] font-bold py-2.5 px-6 rounded shadow-md hover:bg-[var(--header)] hover:shadow-lg transition-all uppercase text-sm tracking-wider flex items-center justify-center">
+        <a href="<?= base_url('/admin/hotels/create') ?>" class="w-full sm:w-auto text-center bg-[var(--theme2)] text-[var(--white)] font-bold py-2.5 px-6 rounded shadow-md hover:bg-[var(--header)] hover:shadow-lg transition-all uppercase text-sm tracking-wider flex items-center justify-center">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Onboard Property
         </a>
@@ -38,7 +38,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_credentials']);
                 <div class="w-8 h-8 rounded-lg bg-[var(--theme2)] text-[var(--white)] flex items-center justify-center mr-3 shadow-lg shadow-[var(--theme2)]/20 animate-pulse">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <?= \Syncro\Security\SecurityManager::sanitizeOutput($flashSuccess) ?>
+                <?= e($flashSuccess) ?>
             </h3>
             <p class="text-[10px] text-[var(--theme)] mb-6 font-black uppercase tracking-[0.3em] relative z-10 opacity-80">
                 CRITICAL PROTOCOL: EXPORT CREDENTIALS IMMEDIATELY. VOLATILE MEMORY PURGE IN EFFECT.
@@ -47,19 +47,19 @@ unset($_SESSION['flash_success'], $_SESSION['flash_credentials']);
             <div class="bg-[var(--white)]/5 backdrop-blur-md rounded-2xl border border-[var(--white)]/10 p-6 font-mono text-sm space-y-4 relative z-10 shadow-inner">
                 <div class="flex flex-col md:flex-row md:justify-between items-center bg-[var(--white)]/5 p-4 rounded-xl border border-[var(--white)]/5">
                     <span class="font-black text-[var(--white)]/40 uppercase tracking-[0.2em] text-[9px] mb-2 md:mb-0">Control Identifier</span>
-                    <span class="text-[var(--white)] font-black tracking-wider text-sm"><?= \Syncro\Security\SecurityManager::sanitizeOutput($flashCreds['email']) ?></span>
+                    <span class="text-[var(--white)] font-black tracking-wider text-sm"><?= e($flashCreds['email']) ?></span>
                 </div>
                 <div class="flex flex-col md:flex-row md:justify-between items-center bg-[var(--white)]/5 p-4 rounded-xl border border-[var(--white)]/5">
                     <span class="font-black text-[var(--white)]/40 uppercase tracking-[0.2em] text-[9px] mb-2 md:mb-0">Entropy Password</span>
-                    <span class="text-[var(--header)] font-black bg-[var(--theme)] px-4 py-2 rounded-lg border-2 border-[var(--theme2)]/30 shadow-lg shadow-[var(--theme)]/20"><?= \Syncro\Security\SecurityManager::sanitizeOutput($flashCreds['password']) ?></span>
+                    <span class="text-[var(--header)] font-black bg-[var(--theme)] px-4 py-2 rounded-lg border-2 border-[var(--theme2)]/30 shadow-lg shadow-[var(--theme)]/20"><?= e($flashCreds['password']) ?></span>
                 </div>
                 <div class="flex flex-col md:flex-row md:justify-between items-center bg-[var(--white)]/5 p-4 rounded-xl border border-[var(--white)]/5">
                     <span class="font-black text-[var(--white)]/40 uppercase tracking-[0.2em] text-[9px] mb-2 md:mb-0">Infrastructure API Key</span>
-                    <span class="text-[var(--theme)] font-black break-all text-xs tracking-widest"><?= \Syncro\Security\SecurityManager::sanitizeOutput($flashCreds['api_key']) ?></span>
+                    <span class="text-[var(--theme)] font-black break-all text-xs tracking-widest"><?= e($flashCreds['api_key']) ?></span>
                 </div>
                 <div class="flex flex-col md:flex-row md:justify-between items-center bg-[var(--white)]/5 p-4 rounded-xl border border-[var(--white)]/5">
                     <span class="font-black text-[var(--white)]/40 uppercase tracking-[0.2em] text-[9px] mb-2 md:mb-0">Signature Secret</span>
-                    <span class="text-[var(--theme2)] font-black break-all text-xs tracking-widest"><?= \Syncro\Security\SecurityManager::sanitizeOutput($flashCreds['api_secret']) ?></span>
+                    <span class="text-[var(--theme2)] font-black break-all text-xs tracking-widest"><?= e($flashCreds['api_secret']) ?></span>
                 </div>
             </div>
         </div>
@@ -92,10 +92,10 @@ unset($_SESSION['flash_success'], $_SESSION['flash_credentials']);
                                 #<?= str_pad((string)$hotel['id'], 4, '0', STR_PAD_LEFT) ?>
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap text-[14px] font-black text-[var(--header)] tracking-tight">
-                                <?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['property_name']) ?>
+                                <?= e($hotel['property_name']) ?>
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap text-xs text-[var(--text)] font-black font-mono opacity-60 group-hover:opacity-100 transition-opacity">
-                                <?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['admin_email'] ?? '') ?>
+                                <?= e($hotel['admin_email'] ?? '') ?>
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap">
                                 <?php if ($hotel['status'] === 'active'): ?>
@@ -108,7 +108,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_credentials']);
                                 <?= date('M d, Y', strtotime($hotel['created_at'])) ?>
                             </td>
                             <td class="px-8 py-5 whitespace-nowrap text-right">
-                                <a href="/admin/hotels/edit?id=<?= (int)$hotel['id'] ?>" class="inline-flex items-center px-6 py-2.5 bg-[var(--header)] text-[var(--white)] text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-[var(--theme2)] transition-all shadow-xl hover:-translate-y-0.5 active:scale-95">
+                                <a href="<?= base_url() ?>/admin/hotels/edit?id=<?= (int)$hotel['id'] ?>" class="inline-flex items-center px-6 py-2.5 bg-[var(--header)] text-[var(--white)] text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-[var(--theme2)] transition-all shadow-xl hover:-translate-y-0.5 active:scale-95">
                                     Control &rarr;
                                 </a>
                             </td>

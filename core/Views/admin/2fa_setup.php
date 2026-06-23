@@ -23,7 +23,7 @@
                     <div>
                         <p class="mb-3">Scan the QR code below with your app:</p>
                         <div class="bg-[var(--light)] p-4 rounded-xl inline-block border-2 border-[var(--border)]">
-                            <img src="<?= htmlspecialchars($qrImage) ?>" alt="QR Code" class="w-48 h-48">
+                            <img src="<?= e($qrImage) ?>" alt="QR Code" class="w-48 h-48">
                         </div>
                     </div>
                 </li>
@@ -32,14 +32,14 @@
                     <div>
                         <p class="mb-1">Or enter this manual secret key:</p>
                         <code class="px-3 py-1 bg-[var(--light)] text-[var(--header)] font-mono font-black tracking-widest rounded border border-[var(--border)]">
-                            <?= htmlspecialchars($secret) ?>
+                            <?= e($secret) ?>
                         </code>
                     </div>
                 </li>
             </ol>
 
-            <form action="/admin/settings/2fa/verify" method="POST" class="mt-8 border-t-2 border-[var(--border)] pt-8">
-                <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($_SESSION['csrf_token'] ?? '') ?>">
+            <form action="<?= base_url('/admin/settings/2fa/verify') ?>" method="POST" class="mt-8 border-t-2 border-[var(--border)] pt-8">
+                <?= csrf_field() ?>">
                 
                 <div class="space-y-3 mb-6">
                     <label class="block text-[9px] font-black text-[var(--header)] uppercase tracking-[0.3em] opacity-40">Enter 6-Digit Code</label>

@@ -133,14 +133,19 @@ class BookingService
             }
 
             // 4. Update the CRM Directory (Guests Table)
-            // ---> BUG FIXED HERE: Changed 'lifetime_revenue' to 'total_revenue' <---
-            $guestCheck = $db->prepare("SELECT id FROM guests WHERE full_name = :name AND hotel_id = :hid");
-            $guestCheck->execute(['name' => $guestName, 'hid' => $hotelId]);
+            // ---> BUG FIXED HERE: Lookup by email if available, otherwise by name <---
+            if (!empty($guestEmail)) {
+                $guestCheck = $db->prepare("SELECT id FROM guests WHERE email = :email AND hotel_id = :hid");
+                $guestCheck->execute(['email' => $guestEmail, 'hid' => $hotelId]);
+            } else {
+                $guestCheck = $db->prepare("SELECT id FROM guests WHERE full_name = :name AND hotel_id = :hid");
+                $guestCheck->execute(['name' => $guestName, 'hid' => $hotelId]);
+            }
             $guest = $guestCheck->fetch();
 
             if (!$guest) {
-                $guestInsert = $db->prepare("INSERT INTO guests (hotel_id, full_name, total_revenue, created_at) VALUES (:hid, :name, :rev, NOW())");
-                $guestInsert->execute(['hid' => $hotelId, 'name' => $guestName, 'rev' => $price]);
+                $guestInsert = $db->prepare("INSERT INTO guests (hotel_id, full_name, email, phone, total_revenue, created_at) VALUES (:hid, :name, :email, :phone, :rev, NOW())");
+                $guestInsert->execute(['hid' => $hotelId, 'name' => $guestName, 'email' => empty($guestEmail) ? null : $guestEmail, 'phone' => empty($guestPhone) ? null : $guestPhone, 'rev' => $price]);
             } else {
                 $guestUpdate = $db->prepare("UPDATE guests SET total_revenue = total_revenue + :rev WHERE id = :id");
                 $guestUpdate->execute(['rev' => $price, 'id' => $guest['id']]);

@@ -8,35 +8,35 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
 
 <style>
     :root {
-        --theme: #FFC107;
-        --theme2: #003366;
-        --header: #002244;
-        --text: #555555;
-        --light: #f8f9fa;
-        --border: #eef1f6;
-        --white: #ffffff;
+        --theme: var(--theme);
+        --theme2: var(--header);
+        --header: var(--header);
+        --text: var(--text);
+        --light: var(--light);
+        --border: var(--light);
+        --white: var(--white);
     }
     html { scroll-behavior: smooth; }
 </style>
 
 <nav class="absolute top-0 w-full z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent backdrop-blur-[2px]">
     <h1 class="text-[var(--white)] text-2xl font-black uppercase tracking-[0.3em] m-0 drop-shadow-lg"><?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['property_name']) ?></h1>
-    <a href="#booking-section" class="border-2 border-[var(--theme)]/60 text-[var(--white)] py-2.5 px-8 rounded-full font-black uppercase text-[10px] no-underline transition-all duration-500 bg-[var(--theme)]/10 hover:bg-[var(--theme)] hover:text-[var(--header)] hover:scale-105 active:scale-95 shadow-xl">Reserve Now</a>
+    <a href="#booking-section" class="border-2 border-[var(--theme)]/60 text-[var(--white)] py-2.5 px-8 rounded-full font-black uppercase text-[10px] no-underline transition-all duration-500 bg-[var(--theme)]/10 hover:bg-[var(--theme)] hover:text-[var(--header)] hover:scale-105 active:scale-95 shadow-xl"><?= __('Reserve Now') ?></a>
 </nav>
 
 <header class="relative h-[90vh] min-h-[700px] flex flex-col items-center justify-center bg-cover bg-center bg-fixed text-center" style="background-image: url('<?= htmlspecialchars($heroImage) ?>');">
     <div class="absolute inset-0 bg-gradient-to-t from-[var(--header)] via-black/40 to-black/60"></div>
     <div class="relative z-10 px-5 text-[var(--white)] max-w-5xl mx-auto mt-20">
         <div class="inline-block mb-6 px-4 py-1.5 border border-[var(--theme)]/30 rounded-full bg-black/20 backdrop-blur-sm">
-            <span class="text-[var(--theme)] font-black tracking-[5px] uppercase text-[10px]">A Signature Collection Experience</span>
+            <span class="text-[var(--theme)] font-black tracking-[5px] uppercase text-[10px]"><?= __('A Signature Collection Experience') ?></span>
         </div>
-        <h2 class="text-6xl md:text-8xl font-black leading-tight mb-8 text-[var(--white)] tracking-tighter drop-shadow-2xl">Elevate Your Stay.</h2>
+        <h2 class="text-6xl md:text-8xl font-black leading-tight mb-8 text-[var(--white)] tracking-tighter drop-shadow-2xl"><?= __('Elevate Your Stay.') ?></h2>
         <p class="text-xl md:text-2xl font-medium leading-relaxed text-[var(--light)]/90 mb-12 max-w-3xl mx-auto drop-shadow-md">
             <?= nl2br(\Syncro\Security\SecurityManager::sanitizeOutput($hotelDesc)) ?>
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#booking-section" class="inline-block bg-[var(--theme)] text-[var(--header)] font-black py-5 px-12 rounded-lg text-[11px] uppercase tracking-[0.2em] transition-all duration-500 shadow-2xl hover:bg-[var(--white)] hover:-translate-y-2 active:scale-95">Check Availability</a>
-            <a href="#rooms-section" class="inline-block bg-white/10 backdrop-blur-md text-[var(--white)] border border-white/20 font-black py-5 px-12 rounded-lg text-[11px] uppercase tracking-[0.2em] transition-all duration-500 hover:bg-white/20 hover:-translate-y-1">View Suites</a>
+            <a href="#booking-section" class="inline-block bg-[var(--theme)] text-[var(--header)] font-black py-5 px-12 rounded-lg text-[11px] uppercase tracking-[0.2em] transition-all duration-500 shadow-2xl hover:bg-[var(--white)] hover:-translate-y-2 active:scale-95"><?= __('Check Availability') ?></a>
+            <a href="#rooms-section" class="inline-block bg-white/10 backdrop-blur-md text-[var(--white)] border border-white/20 font-black py-5 px-12 rounded-lg text-[11px] uppercase tracking-[0.2em] transition-all duration-500 hover:bg-white/20 hover:-translate-y-1"><?= __('View Suites') ?></a>
         </div>
     </div>
 </header>
@@ -61,8 +61,8 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
 
 <section class="py-32 px-5 bg-[var(--light)]" id="rooms-section">
     <div class="text-center mb-20 max-w-2xl mx-auto">
-        <span class="text-[var(--theme)] font-black uppercase tracking-[0.4em] text-[10px]">Exceptional Comfort</span>
-        <h3 class="text-4xl md:text-5xl font-black text-[var(--header)] mt-4 tracking-tighter">The Signature Suites</h3>
+        <span class="text-[var(--theme)] font-black uppercase tracking-[0.4em] text-[10px]"><?= __('Exceptional Comfort') ?></span>
+        <h3 class="text-4xl md:text-5xl font-black text-[var(--header)] mt-4 tracking-tighter"><?= __('The Signature Suites') ?></h3>
         <div class="h-1.5 w-20 bg-[var(--theme)] mx-auto mt-6 rounded-full"></div>
     </div>
 
@@ -99,7 +99,7 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                         <?php endif; ?>
                     </div>
                     
-                    <button onclick="selectRoom(<?= (int)$room['id'] ?>)" class="w-full bg-[var(--theme2)] text-[var(--white)] font-black py-4.5 rounded-2xl cursor-pointer uppercase text-[10px] tracking-[0.2em] transition-all duration-500 mt-auto hover:bg-[var(--header)] hover:shadow-xl active:scale-95">Reserve Suite</button>
+                    <button onclick="selectRoom(<?= (int)$room['id'] ?>)" class="w-full bg-[var(--theme2)] text-[var(--white)] font-black py-4.5 rounded-2xl cursor-pointer uppercase text-[10px] tracking-[0.2em] transition-all duration-500 mt-auto hover:bg-[var(--header)] hover:shadow-xl active:scale-95"><?= __('Reserve Suite') ?></button>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -117,9 +117,9 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                 <div class="w-24 h-24 bg-[var(--header)] text-[var(--success)] rounded-full flex items-center justify-center mb-8 shadow-inner border-4 border-[var(--success)]/20">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <h3 class="text-5xl font-black text-[var(--header)] mb-6 tracking-tighter">Reservation Confirmed.</h3>
+                <h3 class="text-5xl font-black text-[var(--header)] mb-6 tracking-tighter"><?= __('Reservation Confirmed.') ?></h3>
                 <p class="text-[var(--text)] mb-12 text-xl font-medium max-w-2xl">A digital confirmation has been sent to your inbox. We look forward to welcoming you to <strong class="text-[var(--header)]"><?= htmlspecialchars($hotel['property_name']) ?></strong>.</p>
-                <a href="/book/<?= htmlspecialchars($slug) ?>" class="inline-block bg-[var(--theme2)] text-[var(--white)] font-black py-5 px-14 rounded-2xl text-[11px] uppercase tracking-[0.25em] transition-all duration-500 shadow-2xl hover:bg-[var(--header)] hover:-translate-y-2 active:scale-95">Book Another Suite</a>
+                <a href="<?= base_url() ?>/book/<?= htmlspecialchars($slug) ?>" class="inline-block bg-[var(--theme2)] text-[var(--white)] font-black py-5 px-14 rounded-2xl text-[11px] uppercase tracking-[0.25em] transition-all duration-500 shadow-2xl hover:bg-[var(--header)] hover:-translate-y-2 active:scale-95"><?= __('Book Another Suite') ?></a>
             </div>
         <?php else: ?>
 
@@ -127,10 +127,10 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                 <div class="mb-14">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="h-px w-8 bg-[var(--theme)]"></div>
-                        <span class="text-[var(--theme)] font-black tracking-[4px] uppercase text-[10px]">Authorized Suite Reservation</span>
+                        <span class="text-[var(--theme)] font-black tracking-[4px] uppercase text-[10px]"><?= __('Authorized Suite Reservation') ?></span>
                     </div>
-                    <h3 class="text-4xl md:text-5xl font-black text-[var(--header)] tracking-tighter mb-4">Secure Your Experience.</h3>
-                    <p class="text-[var(--text)] text-base font-medium opacity-60">Finalize your luxury stay at our priority boutique property.</p>
+                    <h3 class="text-4xl md:text-5xl font-black text-[var(--header)] tracking-tighter mb-4"><?= __('Secure Your Experience.') ?></h3>
+                    <p class="text-[var(--text)] text-base font-medium opacity-60"><?= __('Finalize your luxury stay at our priority boutique property.') ?></p>
                 </div>
 
                 <?php if (!empty($error)): ?>
@@ -140,26 +140,26 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                     </div>
                 <?php endif; ?>
 
-                <form id="bookingForm" action="/book/<?= htmlspecialchars($slug) ?>" method="POST" class="space-y-8">
+                <form id="bookingForm" action="<?= base_url() ?>/book/<?= htmlspecialchars($slug) ?>" method="POST" class="space-y-8">
                     <input type="hidden" name="booking_id" id="booking_id" value="">
-                    <input type="hidden" name="csrf_token" value="<?= \Syncro\Security\SecurityManager::sanitizeOutput($csrfToken ?? '') ?>">
+                    <?= csrf_field() ?>">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-2">
-                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1">Guest Identity</label>
-                            <input type="text" name="guest_name" placeholder="Legal Full Name" required class="w-full p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] placeholder:opacity-30">
+                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1"><?= __('Guest Identity') ?></label>
+                            <input type="text" name="guest_name" placeholder="<?= __('Legal Full Name') ?>" required class="w-full p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] placeholder:opacity-30">
                         </div>
                         <div class="space-y-2">
-                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1">Communication Hub</label>
+                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1"><?= __('Communication Hub') ?></label>
                             <input type="email" name="guest_email" placeholder="example@luxury.com" required class="w-full p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] placeholder:opacity-30">
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1">Suite Selection</label>
+                        <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1"><?= __('Suite Selection') ?></label>
                         <div class="relative">
                             <select name="room_type_id" id="roomSelect" required class="w-full p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] appearance-none cursor-pointer">
-                                <option value="" disabled selected>Select Your Suite experience...</option>
+                                <option value="" disabled selected><?= __('Select Your Suite experience...') ?></option>
                                 <?php foreach ($rooms as $room): ?>
                                     <option value="<?= (int)$room['id'] ?>"><?= htmlspecialchars($room['name']) ?> — ₹<?= number_format((float)$room['base_price']) ?> / Night</option>
                                 <?php endforeach; ?>
@@ -171,21 +171,21 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                     </div>
 
                     <div class="space-y-2">
-                        <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1">Privilege Code</label>
+                        <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1"><?= __('Privilege Code') ?></label>
                         <div class="flex gap-4">
                             <input type="text" name="promo_code" id="promoCode" placeholder="e.g. ELITE2024" class="flex-1 p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black uppercase transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] tracking-[0.3em] placeholder:tracking-normal placeholder:opacity-30">
-                            <button type="button" id="applyPromoBtn" class="bg-[var(--header)] text-[var(--theme)] px-10 border-none rounded-2xl font-black uppercase cursor-pointer text-[10px] tracking-[0.2em] transition-all duration-300 hover:bg-[var(--theme2)] hover:text-[var(--white)] shadow-lg active:scale-95">Verify</button>
+                            <button type="button" id="applyPromoBtn" class="bg-[var(--header)] text-[var(--theme)] px-10 border-none rounded-2xl font-black uppercase cursor-pointer text-[10px] tracking-[0.2em] transition-all duration-300 hover:bg-[var(--theme2)] hover:text-[var(--white)] shadow-lg active:scale-95"><?= __('Verify') ?></button>
                         </div>
                         <p id="promoMessage" class="text-[11px] mt-3 font-black tracking-wide px-1"></p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-4">
                         <div class="space-y-2">
-                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1">Arrival Date</label>
+                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1"><?= __('Arrival Date') ?></label>
                             <input type="date" name="check_in" id="checkIn" min="<?= date('Y-m-d') ?>" required class="w-full p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] uppercase tracking-widest cursor-pointer">
                         </div>
                         <div class="space-y-2">
-                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1">Departure Date</label>
+                            <label class="block text-[10px] font-black text-[var(--header)] uppercase tracking-[0.2em] opacity-40 ml-1"><?= __('Departure Date') ?></label>
                             <input type="date" name="check_out" id="checkOut" min="<?= date('Y-m-d', strtotime('+1 day')) ?>" required class="w-full p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--light)] text-[var(--header)] font-black transition-all focus:bg-[var(--white)] focus:outline-none focus:ring-4 focus:ring-[var(--theme)]/10 focus:border-[var(--theme)] uppercase tracking-widest cursor-pointer">
                         </div>
                     </div>
@@ -202,7 +202,7 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                 <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-[var(--theme2)] opacity-40 rounded-full blur-[100px]"></div>
 
                 <div class="relative z-10">
-                    <h4 class="text-3xl font-black text-[var(--white)] mb-12 tracking-tighter italic">Direct <span class="text-[var(--theme)]">Privileges.</span></h4>
+                    <h4 class="text-3xl font-black text-[var(--white)] mb-12 tracking-tighter italic">Direct <span class="text-[var(--theme)]"><?= __('Privileges.') ?></span></h4>
                     
                     <ul class="list-none p-0 m-0 space-y-10">
                         <li class="flex items-start gap-5">
@@ -210,8 +210,8 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                             <div>
-                                <strong class="block text-[var(--white)] font-black text-[11px] uppercase tracking-widest mb-2">Best Rate Guarantee</strong>
-                                <span class="text-xs opacity-50 leading-relaxed font-medium block">Secure the absolute lowest verified price globally by booking direct.</span>
+                                <strong class="block text-[var(--white)] font-black text-[11px] uppercase tracking-widest mb-2"><?= __('Best Rate Guarantee') ?></strong>
+                                <span class="text-xs opacity-50 leading-relaxed font-medium block"><?= __('Secure the absolute lowest verified price globally by booking direct.') ?></span>
                             </div>
                         </li>
                         <li class="flex items-start gap-5">
@@ -219,8 +219,8 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                             <div>
-                                <strong class="block text-[var(--white)] font-black text-[11px] uppercase tracking-widest mb-2">Priority Selection</strong>
-                                <span class="text-xs opacity-50 leading-relaxed font-medium block">Direct guests receive priority for suite upgrades and early access.</span>
+                                <strong class="block text-[var(--white)] font-black text-[11px] uppercase tracking-widest mb-2"><?= __('Priority Selection') ?></strong>
+                                <span class="text-xs opacity-50 leading-relaxed font-medium block"><?= __('Direct guests receive priority for suite upgrades and early access.') ?></span>
                             </div>
                         </li>
                         <li class="flex items-start gap-5">
@@ -228,14 +228,14 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                             <div>
-                                <strong class="block text-[var(--white)] font-black text-[11px] uppercase tracking-widest mb-2">Zero Commission Fee</strong>
-                                <span class="text-xs opacity-50 leading-relaxed font-medium block">No hidden platform markups or third-party reservation expenses.</span>
+                                <strong class="block text-[var(--white)] font-black text-[11px] uppercase tracking-widest mb-2"><?= __('Zero Commission Fee') ?></strong>
+                                <span class="text-xs opacity-50 leading-relaxed font-medium block"><?= __('No hidden platform markups or third-party reservation expenses.') ?></span>
                             </div>
                         </li>
                     </ul>
                     
                     <div class="mt-20 pt-10 border-t border-[var(--white)]/10">
-                        <p class="text-[10px] text-[var(--theme)] uppercase mb-3 font-black tracking-[0.3em]">Concierge Desk</p>
+                        <p class="text-[10px] text-[var(--theme)] uppercase mb-3 font-black tracking-[0.3em]"><?= __('Concierge Desk') ?></p>
                         <p class="text-3xl font-black tracking-tighter"><?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['phone'] ?? '+1 800 LUXURY') ?></p>
                     </div>
                 </div>
@@ -250,14 +250,14 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
         <div class="text-[var(--white)] text-3xl font-black uppercase tracking-widest mb-8"><?= \Syncro\Security\SecurityManager::sanitizeOutput($hotel['property_name']) ?></div>
         
         <div class="mb-10 text-xs font-bold uppercase tracking-widest flex flex-wrap justify-center gap-6 md:gap-10">
-            <a href="/terms" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5">Terms & Conditions</a>
-            <a href="/privacy" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5">Privacy Policy</a>
-            <a href="/shipping" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5">Shipping Policy</a>
-            <a href="/refund" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5">Refund Policy</a>
+            <a href="<?= base_url('/terms') ?>" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5">Terms & Conditions</a>
+            <a href="<?= base_url('/privacy') ?>" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5"><?= __('Privacy Policy') ?></a>
+            <a href="<?= base_url('/shipping') ?>" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5"><?= __('Shipping Policy') ?></a>
+            <a href="<?= base_url('/refund') ?>" class="text-[var(--light)] no-underline opacity-60 transition-all duration-300 hover:opacity-100 hover:text-[var(--theme)] hover:-translate-y-0.5"><?= __('Refund Policy') ?></a>
         </div>
 
         <p class="text-[var(--light)] opacity-40 text-[10px] uppercase tracking-widest font-semibold border-t border-[var(--white)]/10 pt-8 mt-8 inline-block px-10">
-            Powered by <span class="text-[var(--theme)] opacity-100">Syncro PMS</span> &bull; The Enterprise Hospitality Engine
+            <?= __('Powered by') ?> <span class="text-[var(--theme)] opacity-100">Syncro PMS</span> &bull; The Enterprise Hospitality Engine
         </p>
     </div>
 </footer>
@@ -327,7 +327,7 @@ $hotelDesc = !empty($hotel['description']) ? $hotel['description'] : "Escape the
             
             if (nights <= 0) { 
                 e.preventDefault();
-                alert("Check-out date must be strictly after the Check-in date."); 
+                alert("Check-out date must be strictly after the <?= __('Check-in') ?> date."); 
                 return; 
             }
             

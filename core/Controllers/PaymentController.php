@@ -8,6 +8,13 @@ use Exception;
 
 class PaymentController extends BaseController
 {
+    private \Syncro\Models\Database $db;
+
+    public function __construct(\Syncro\Models\Database $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * Start a PhonePe Checkout Session from the Guest Portal
      */
@@ -21,7 +28,7 @@ class PaymentController extends BaseController
         }
 
         try {
-            $db = Database::getConnection();
+            $db = $this->db->getPDO();
             $stmt = $db->prepare("
                 SELECT b.id, b.guest_id, b.total_price, b.payment_status, b.token, 
                        h.phonepe_merchant_id, h.phonepe_salt_key, h.phonepe_env, h.slug 
