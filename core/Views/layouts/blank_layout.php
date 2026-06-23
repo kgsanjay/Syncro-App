@@ -5,6 +5,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Syncro - Advanced Property Management System and Channel Manager. Manage reservations, housekeeping, and multiple properties securely.">
+    <meta name="keywords" content="PMS, Property Management System, Hotel Software, Channel Manager, Syncro, Hospitality">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="Syncro | Modern Property Management">
+    <meta property="og:description" content="Streamline your hotel operations with Syncro's multi-tenant Property Management System.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:image" content="https://yourdomain.com/assets/images/og-image.jpg">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Syncro | Modern Property Management">
+    <meta name="twitter:description" content="Streamline your hotel operations with Syncro's multi-tenant PMS.">
     <?= csrf_meta() ?>">
     
     <title><?= \Syncro\Security\SecurityManager::sanitizeOutput($pageTitle ?? 'Syncro') ?></title>
